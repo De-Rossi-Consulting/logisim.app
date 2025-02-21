@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>CheerpJ test</title>
+    <script src="https://cjrtnc.leaningtech.com/3.1/cj3loader.js"></script>
+  </head>
+  <body>
+    <script>
+      (async function () {
+        await cheerpjInit();
+        cheerpjCreateDisplay(1920, 1080);
+        await cheerpjRunJar("/app/logisim/logisim-generic-2.7.1.jar");
+      })();
+    </script>
+  </body>
+</html>
