@@ -20,6 +20,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.List;
 
@@ -95,7 +96,18 @@ class ExportImage {
 			System.err.println("unexpected format; aborted"); //OK
 			return;
 		}
+
+		ProgressMonitor monitor = new ProgressMonitor(frame,
+				Strings.get("exportImageProgress"),
+				null,
+				0, 10000);
+		monitor.setMillisToDecideToPopup(100);
+		monitor.setMillisToPopup(200);
+		monitor.setProgress(0);
 		
+		new ExportThread(frame, frame.getCanvas(), filter,
+				circuits, scale, printerView, monitor).start();
+		/*
 		// Then display file chooser
 		Loader loader = proj.getLogisimFile().getLoader();
 		JFileChooser chooser = loader.createChooser();
@@ -147,7 +159,7 @@ class ExportImage {
 		// monitor.)
 		new ExportThread(frame, frame.getCanvas(), dest, filter,
 				circuits, scale, printerView, monitor).start();
-
+		*/
 	}
 
 	private static class OptionsPanel extends JPanel implements ChangeListener {
@@ -277,19 +289,17 @@ class ExportImage {
 	private static class ExportThread extends Thread {
 		Frame frame;
 		Canvas canvas;
-		File dest;
 		ImageFileFilter filter;
 		List<Circuit> circuits;
 		double scale;
 		boolean printerView;
 		ProgressMonitor monitor;
 
-		ExportThread(Frame frame, Canvas canvas, File dest, ImageFileFilter f,
-				List<Circuit> circuits, double scale, boolean printerView,
-				ProgressMonitor monitor) {
+		ExportThread(Frame frame, Canvas canvas, ImageFileFilter f,
+					List<Circuit> circuits, double scale, boolean printerView,
+					ProgressMonitor monitor) {
 			this.frame = frame;
 			this.canvas = canvas;
-			this.dest = dest;
 			this.filter = f;
 			this.circuits = circuits;
 			this.scale = scale;
@@ -303,56 +313,74 @@ class ExportImage {
 				export(circ);
 			}
 		}
-		
+
 		private void export(Circuit circuit) {
-			Bounds bds = circuit.getBounds(canvas.getGraphics())
-				.expand(BORDER_SIZE);
+			Bounds bds = circuit.getBounds(canvas.getGraphics()).expand(BORDER_SIZE);
 			int width = (int) Math.round(bds.getWidth() * scale);
 			int height = (int) Math.round(bds.getHeight() * scale);
-			BufferedImage img = new BufferedImage(width, height,
-					BufferedImage.TYPE_INT_RGB);
+			BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 			Graphics base = img.getGraphics();
 			Graphics g = base.create();
 			g.setColor(Color.white);
 			g.fillRect(0, 0, width, height);
 			g.setColor(Color.black);
+
 			if (g instanceof Graphics2D) {
 				((Graphics2D) g).scale(scale, scale);
 				((Graphics2D) g).translate(-bds.getX(), -bds.getY());
 			} else {
-				JOptionPane.showMessageDialog(frame,
-						Strings.get("couldNotCreateImage"));
-				monitor.close();
-			}
-
-			CircuitState circuitState = canvas.getProject().getCircuitState(circuit);
-			ComponentDrawContext context = new ComponentDrawContext(canvas,
-					circuit, circuitState, base, g, printerView);
-			circuit.draw(context, null);
-
-			File where;
-			if (dest.isDirectory()) {
-				where = new File(dest, circuit.getName() + filter.extensions[0]);
-			} else if (filter.accept(dest)) {
-				where = dest;
-			} else {
-				String newName = dest.getName() + filter.extensions[0];
-				where = new File(dest.getParentFile(), newName);
-			}
-			try {
-				switch (filter.type) {
-				case FORMAT_GIF: GifEncoder.toFile(img, where, monitor); break;
-				case FORMAT_PNG: ImageIO.write(img, "PNG", where); break;
-				case FORMAT_JPG: ImageIO.write(img, "JPEG", where); break;
-				}
-			} catch (Exception e) {
-				JOptionPane.showMessageDialog(frame,
-						Strings.get("couldNotCreateFile"));
+				JOptionPane.showMessageDialog(frame, Strings.get("couldNotCreateImage"));
 				monitor.close();
 				return;
 			}
+
+			CircuitState circuitState = canvas.getProject().getCircuitState(circuit);
+			ComponentDrawContext context = new ComponentDrawContext(canvas, circuit, circuitState, base, g, printerView);
+			circuit.draw(context, null);
 			g.dispose();
+
+			// Convert BufferedImage to byte array
+			byte[] imageData = convertBufferedImageToByteArray(img, getFormat(filter.type));
+			if (imageData != null) {
+				// Call JavaScript function via CheerpJ
+				String fileName = circuit.getName() + getExtension(filter.type);
+				DownloadFile(fileName, imageData);
+			} else {
+				JOptionPane.showMessageDialog(frame, Strings.get("couldNotCreateFile"));
+			}
+
 			monitor.close();
 		}
+
+		private static byte[] convertBufferedImageToByteArray(BufferedImage image, String format) {
+			try {
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				ImageIO.write(image, format, baos);
+				return baos.toByteArray();
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+
+		private static String getFormat(int type) {
+			switch (type) {
+				case FORMAT_GIF: return "GIF";
+				case FORMAT_PNG: return "PNG";
+				case FORMAT_JPG: return "JPEG";
+				default: return "PNG";  // Default to PNG
+			}
+		}
+
+		private static String getExtension(int type) {
+			switch (type) {
+				case FORMAT_GIF: return ".gif";
+				case FORMAT_PNG: return ".png";
+				case FORMAT_JPG: return ".jpg";
+				default: return ".png";
+			}
+		}
+
+		public static native void DownloadFile(String filename, byte[] imageData);
 	}
 }
