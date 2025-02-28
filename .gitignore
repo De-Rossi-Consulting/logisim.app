@@ -1,0 +1,5 @@
+# ignore cached stuff
+**/__pycache__/
+**.pyc
+logisim/scripts/__pycache__/
+

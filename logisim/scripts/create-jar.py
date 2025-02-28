@@ -272,7 +272,7 @@ with open(build_path(temp_dir, 'META-INF/MANIFEST.MF'), 'w') as manifest:
 os.chdir(temp_dir)
 files_to_include = os.listdir('.')
 files_to_include.remove('META-INF')
-jar_filename = 'logisim-fragile-' + version + '.jar'
+jar_filename = 'logisim.jar'
 jar_pathname = build_path(dest_dir, jar_filename, cygwin=False)
 system(jar_exec, 'fcm', jar_pathname, 'META-INF/MANIFEST.MF', *files_to_include)
 
