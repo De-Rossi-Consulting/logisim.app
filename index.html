@@ -12,11 +12,11 @@
         await cheerpjInit({
           version: 8,
           natives: {
-            Java_com_cburch_logisim_gui_main_ExportThread_DownloadFile,
+            Java_com_cburch_logisim_gui_main_ExportImage_DownloadFile,
           },
         });
         cheerpjCreateDisplay(800, 800);
-        await cheerpjRunJar("/app/logisim/logisim.jar");
+        await cheerpjRunJar("/app/logisim.jar");
       })();
     </script>
   </body>

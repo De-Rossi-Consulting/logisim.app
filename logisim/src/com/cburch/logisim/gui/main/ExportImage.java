@@ -43,6 +43,7 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
+import java.util.Base64;
 
 class ExportImage {
 	private static final int SLIDER_DIVISIONS = 6;
@@ -286,7 +287,9 @@ class ExportImage {
 		}
 	}
 
-	private static class ExportThread extends Thread {
+	public static native void DownloadFile(String filename, String imageData);
+
+	public static class ExportThread extends Thread {
 		Frame frame;
 		Canvas canvas;
 		ImageFileFilter filter;
@@ -344,7 +347,8 @@ class ExportImage {
 			if (imageData != null) {
 				// Call JavaScript function via CheerpJ
 				String fileName = circuit.getName() + getExtension(filter.type);
-				DownloadFile(fileName, imageData);
+				String base64Image = Base64.getEncoder().encodeToString(imageData);
+				ExportImage.DownloadFile(fileName, base64Image);
 			} else {
 				JOptionPane.showMessageDialog(frame, Strings.get("couldNotCreateFile"));
 			}
@@ -381,6 +385,5 @@ class ExportImage {
 			}
 		}
 
-		public static native void DownloadFile(String filename, byte[] imageData);
 	}
 }
