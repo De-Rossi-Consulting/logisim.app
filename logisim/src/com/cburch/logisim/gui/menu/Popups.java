@@ -23,6 +23,8 @@ import com.cburch.logisim.tools.AddTool;
 import com.cburch.logisim.tools.Library;
 import com.cburch.logisim.tools.Tool;
 
+import com.cburch.logisim.proj.ProjectActions;
+
 public class Popups {
 	private static class ProjectPopup extends JPopupMenu
 			implements ActionListener {
@@ -165,4 +167,37 @@ public class Popups {
 		return new LibraryPopup(proj, lib, isTop);
 	}
 
+	public static JPopupMenu forFileSystemChoicePopup(Project proj, Library lib, boolean isTop){
+		return new FileSystemChoicePopup(proj, lib, isTop);
+	}
+
+	// For deciding between local and cheerp memory storage
+	// Will only appear when using 'save as'
+	public static class FileSystemChoicePopup extends JPopupMenu
+		implements ActionListener {
+		Project proj;
+		Library lib;
+		JMenuItem localFiles = new JMenuItem(Strings.get("fileSystemLocal"));
+		JMenuItem cheerpFiles = new JMenuItem(Strings.get("fileSystemCheerp"));
+
+		FileSystemChoicePopup(Project proj, Library lib, boolean is_top) {
+			super(Strings.get("memoryMenu"));
+			this.proj = proj;
+			this.lib = lib;
+
+			add(localFiles); localFiles.addActionListener(this);
+			add(cheerpFiles); cheerpFiles.addActionListener(this);
+			localFiles.setEnabled(is_top);
+			cheerpFiles.setEnabled(is_top && lib instanceof LoadedLibrary);
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			Object src = e.getSource();
+			if (src == cheerpFiles) {
+				ProjectActions.doSaveAs(proj);
+			} else if (src == localFiles) {
+				//empty for now
+			}
+		}
+	}
 }
