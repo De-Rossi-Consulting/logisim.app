@@ -5,7 +5,7 @@
 
 //Export Image
 async function Java_com_cburch_logisim_gui_main_ExportImage_DownloadFile(lib, filename, filedata) {
-    console.log(`Creating download for file: ${filename}`)
+    console.log(`Creating download for file: ${filename}`);
 
     const byteCharacters = atob(filedata);
     const byteNumbers = new Array(byteCharacters.length);
@@ -24,4 +24,8 @@ async function Java_com_cburch_logisim_gui_main_ExportImage_DownloadFile(lib, fi
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+}
+
+async function Java_com_cburch_logisim_gui_menu_Popups_SendFileData(lib, data) {
+    console.log(data);
 }

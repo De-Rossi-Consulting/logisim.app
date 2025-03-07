@@ -207,6 +207,7 @@ public class Popups {
 					byte[] fileData = byteStream.toByteArray();
 
 					//call js
+					SendFileData(fileData);
 
 					byteStream.close();
 				}
@@ -217,5 +218,8 @@ public class Popups {
 			}
 			this.setVisible(false);
 		}
+
 	}
+	
+ 	public static native void SendFileData(byte[] data);
 }
