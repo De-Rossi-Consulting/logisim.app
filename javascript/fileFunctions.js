@@ -26,6 +26,25 @@ async function Java_com_cburch_logisim_gui_main_ExportImage_DownloadFile(lib, fi
     URL.revokeObjectURL(url);
 }
 
+//Save as
 async function Java_com_cburch_logisim_gui_menu_Popups_SendFileData(lib, data) {
-    console.log(data);
+    console.log("Recieved file to save");
+
+    try {
+        const fileLoc = await window.showSaveFilePicker({
+            suggestedName: "",
+            types: [{
+                descrption: "Logisim Circuit Files",
+                accept: {"application/octet-stream" : [".circ"]}
+            }]
+        });
+
+        const writableStream = await fileLoc.createWritable();
+        await writableStream.write(data);
+        await writableStream.close();
+
+        console.log("File saved successfully!");
+    } catch (error) {
+        console.error("Failed to save file: ", error)
+    }
 }
