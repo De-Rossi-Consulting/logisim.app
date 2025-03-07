@@ -126,7 +126,8 @@ class MenuFile extends Menu implements ActionListener {
 		} else if (src == save) {
 			ProjectActions.doSave(proj);
 		} else if (src == saveAs) {
-			ProjectActions.doSaveAs(proj);
+			Popups.forFileSystemChoicePopup(proj).show(this.getComponent(), this.getX(), this.getY());
+			//ProjectActions.doSaveAs(proj);
 		} else if (src == prefs) {
 			PreferencesFrame.showPreferences();
 		} else if (src == quit) {
