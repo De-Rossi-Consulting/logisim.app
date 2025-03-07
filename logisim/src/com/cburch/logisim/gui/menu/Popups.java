@@ -24,6 +24,10 @@ import com.cburch.logisim.tools.Library;
 import com.cburch.logisim.tools.Tool;
 
 import com.cburch.logisim.proj.ProjectActions;
+import com.cburch.logisim.file.XmlWriter;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 public class Popups {
 	private static class ProjectPopup extends JPopupMenu
@@ -192,8 +196,26 @@ public class Popups {
 			if (src == cheerpFiles) {
 				ProjectActions.doSaveAs(proj);
 			} else if (src == localFiles) {
-				//empty for now
+				try {
+					//make the file to send to js 
+					LogisimFile file = proj.getLogisimFile();
+					Loader loader = proj.getLogisimFile().getLoader();
+
+					ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+
+					XmlWriter.write(file, byteStream, loader);
+					byte[] fileData = byteStream.toByteArray();
+
+					//call js
+
+					byteStream.close();
+				}
+				catch (Exception ex) {
+					Loader loader = proj.getLogisimFile().getLoader();
+					loader.showError("Error sending file data");
+				}
 			}
+			this.setVisible(false);
 		}
 	}
 }

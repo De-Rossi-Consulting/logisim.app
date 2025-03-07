@@ -38,8 +38,8 @@ import com.cburch.logisim.tools.Tool;
 import com.cburch.logisim.util.InputEventUtil;
 import com.cburch.logisim.util.StringUtil;
 
-class XmlWriter {
-	static void write(LogisimFile file, OutputStream out, LibraryLoader loader)
+public class XmlWriter {
+	public static void write(LogisimFile file, OutputStream out, LibraryLoader loader)
 			throws ParserConfigurationException,
 				TransformerConfigurationException, TransformerException {
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
