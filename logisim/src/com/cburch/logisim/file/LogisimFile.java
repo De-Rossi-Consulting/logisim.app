@@ -72,6 +72,8 @@ public class LogisimFile extends Library implements LibraryEventSource {
 	private Circuit main = null;
 	private String name;
 	private boolean dirty = false;
+	private boolean isSavedLocally = false;
+	private String filePath;
 
 	LogisimFile(Loader loader) {
 		this.loader = loader;
@@ -91,6 +93,10 @@ public class LogisimFile extends Library implements LibraryEventSource {
 	//
 	// access methods
 	//
+	public boolean getIsSavedLocally() {return isSavedLocally;}
+
+	public String getFilePath() {return filePath;}
+
 	@Override
 	public String getName() { return name; }
 	
@@ -191,6 +197,14 @@ public class LogisimFile extends Library implements LibraryEventSource {
 	//
 	// modification actions
 	//
+	public void setSavedLocally(boolean value){
+		this.isSavedLocally = value;
+	}
+
+	public void setFilePath(String path){
+		this.filePath = path;
+	}
+
 	public void addMessage(String msg) {
 		messages.addLast(msg);
 	}

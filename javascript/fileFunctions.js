@@ -3,7 +3,7 @@
 // Basic file functions
 // used for reading/writing one file 
 
-//Export Image
+// Export Image
 async function Java_com_cburch_logisim_gui_main_ExportImage_DownloadFile(lib, filename, filedata) {
     console.log(`Creating download for file: ${filename}`);
 
@@ -26,13 +26,14 @@ async function Java_com_cburch_logisim_gui_main_ExportImage_DownloadFile(lib, fi
     URL.revokeObjectURL(url);
 }
 
-//Save as
-async function Java_com_cburch_logisim_gui_menu_Popups_SendFileData(lib, data) {
+// Save as
+async function Java_com_cburch_logisim_gui_menu_Popups_SendFileData(lib, data, name) {
     console.log("Recieved file to save");
 
+    // Write the file to system memory
     try {
         const fileLoc = await window.showSaveFilePicker({
-            suggestedName: "",
+            suggestedName: name,
             types: [{
                 descrption: "Logisim Circuit Files",
                 accept: {"application/octet-stream" : [".circ"]}
