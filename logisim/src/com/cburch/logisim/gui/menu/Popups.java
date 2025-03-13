@@ -207,9 +207,12 @@ public class Popups {
 					byte[] fileData = byteStream.toByteArray();
 
 					//call js
-					SendFileData(fileData, file.getName());
+					SendFileData(fileData, file.getName(), file, true);
 
 					byteStream.close();
+					
+					file.setSavedLocally(true);
+					//Will need to retrieve the filepath from CheerpJ
 				}
 				catch (Exception ex) {
 					Loader loader = proj.getLogisimFile().getLoader();
@@ -221,5 +224,5 @@ public class Popups {
 
 	}
 
- 	public static native void SendFileData(byte[] data, String name);
+ 	public static native void SendFileData(byte[] data, String name, LogisimFile logisimFile, boolean saveAs);
 }
