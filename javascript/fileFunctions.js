@@ -1,5 +1,3 @@
-const idb = window.idb;
-
 // Functions used by wasm to interact with local files
 
 // Basic file functions
@@ -37,7 +35,7 @@ async function Java_com_cburch_logisim_gui_menu_Popups_SendFileData(lib, data, n
     if (saveAs || !fileHandlerId || fileHandlerId == "") { // Save as
         // Write the file to system memory
         try {
-            const fileLoc = await window.showSaveFilePicker({
+            const handler = await window.showSaveFilePicker({
                 suggestedName: name,
                 types: [{
                     descrption: "Logisim Circuit Files",
@@ -45,7 +43,7 @@ async function Java_com_cburch_logisim_gui_menu_Popups_SendFileData(lib, data, n
                 }]
             });
 
-            const writableStream = await fileLoc.createWritable();
+            const writableStream = await handler.createWritable();
             await writableStream.write(data);
             await writableStream.close();
             
@@ -53,19 +51,34 @@ async function Java_com_cburch_logisim_gui_menu_Popups_SendFileData(lib, data, n
             //using indexedDB so we can save without requesting permissions
             const id = crypto.randomUUID()
             await logisimFile.setFileHandleId(id);
+            saveFileHandler(handler, id)
 
             console.log("File saved successfully!");
         } catch (error) {
             console.error("Failed to save file: ", error)
         }
     } else { // Save
-        console.log(fileHandlerId)
+        const db = await window.idb.openDB("fileHandlersDB", 1,);
+        handler = await db.get("handlers", fileHandlerId)
+
+        const permissions = await handler.queryPermission({ mode: "readwrite" });
+
+        if (permissions === "granted" || permissions === "prompt") {
+            const writableStream = await handler.createWritable();
+            await writableStream.write(data);
+            await writableStream.close();
+
+            console.log("File saved successfully!");
+        }
+        else {
+            console.error("Save failed: Permission denied.")
+        }
     }
 }
 
 // internal function for saving the fileHandler to indexedDB
 async function saveFileHandler(fileHandler, id) {
-    const db = await idb.openDB("fileHandlesDB", 1, {
+    const db = await window.idb.openDB("fileHandlersDB", 1, {
         upgrade(db) {
             if (!db.objectStoreNames.contains("handlers")) {
                 db.createObjectStore("handlers")

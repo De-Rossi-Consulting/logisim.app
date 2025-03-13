@@ -4,7 +4,8 @@
     <meta charset="utf-8" />
     <title>Logisim Wasm</title>
     <script src="https://cjrtnc.leaningtech.com/3.1/cj3loader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/idb@7/build/iife/index-min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/idb@8/build/umd.js"></script>
+    <script>window.idb = idb;</script>
     <script type="text/javascript" src="/javascript/fileFunctions.js"></script>
   </head>
   <body>
@@ -15,7 +16,7 @@
           natives: {
             Java_com_cburch_logisim_gui_main_ExportImage_DownloadFile,
             Java_com_cburch_logisim_gui_menu_Popups_SendFileData,
-            Java_com_cburch_logisim_proj_ProjectActions_SendFileData,
+            Java_com_cburch_logisim_proj_ProjectActions_SendFileData
           },
         });
         cheerpjCreateDisplay(800, 800);
