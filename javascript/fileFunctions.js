@@ -75,3 +75,9 @@ async function saveFileHandler(fileHandler, id) {
 
     await db.put("handlers", fileHandler, id);
 }
+
+// save function
+async function Java_com_cburch_logisim_proj_ProjectActions_SendFileData(lib, data, name, logisimFile) {
+    console.log("Saving file")
+    await Java_com_cburch_logisim_gui_menu_Popups_SendFileData(lib, data, name, logisimFile, false)
+}

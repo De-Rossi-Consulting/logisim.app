@@ -26,6 +26,12 @@ import com.cburch.logisim.tools.Tool;
 import com.cburch.logisim.util.JFileChoosers;
 import com.cburch.logisim.util.StringUtil;
 
+import com.cburch.logisim.proj.ProjectActions;
+import com.cburch.logisim.file.XmlWriter;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+
 public class ProjectActions {
 	private ProjectActions() { }
 	
@@ -298,6 +304,7 @@ public class ProjectActions {
 	}
 
 	public static boolean doSave(Project proj) {
+		if (proj.getLogisimFile().getIsSavedLocally()) return doLocalSave(proj);
 		Loader loader = proj.getLogisimFile().getLoader();
 		File f = loader.getMainFile();
 		if (f == null) return doSaveAs(proj);
@@ -317,6 +324,27 @@ public class ProjectActions {
 		return ret;
 	}
 
+	private static boolean doLocalSave(Project proj) {
+		try{
+			//make the file to send to js 
+			LogisimFile file = proj.getLogisimFile();
+			Loader loader = proj.getLogisimFile().getLoader();
+
+			ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+
+			XmlWriter.write(file, byteStream, loader);
+			byte[] fileData = byteStream.toByteArray();
+
+			//call js
+			SendFileData(fileData, file.getName(), file);
+			byteStream.close();
+			return true;
+		}
+		catch (Exception e) {
+			return false;
+		}
+	}
+
 	public static void doQuit() {
 		Frame top = Projects.getTopFrame();
 		top.savePreferences();
@@ -326,4 +354,6 @@ public class ProjectActions {
 		}
 		System.exit(0);
 	}
+
+	public static native void SendFileData(byte[] data, String name, LogisimFile logisimFile);
 }
