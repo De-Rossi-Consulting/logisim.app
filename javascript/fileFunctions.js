@@ -94,3 +94,13 @@ async function Java_com_cburch_logisim_proj_ProjectActions_SendFileData(lib, dat
     console.log("Saving file")
     await Java_com_cburch_logisim_gui_menu_Popups_SendFileData(lib, data, name, logisimFile, false)
 }
+
+//open menu popup
+async function Java_com_cburch_logisim_gui_menu_MenuFile_showFileChoiceDialog(lib, menu) {
+    openFileChoicePopup(menu)
+}
+
+async function openFolder() {
+    console.log("TODO")
+    closeFileChoicePopup()
+}

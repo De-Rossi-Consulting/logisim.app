@@ -7,6 +7,54 @@
     <script src="https://cdn.jsdelivr.net/npm/idb@8/build/umd.js"></script>
     <script>window.idb = idb;</script>
     <script type="text/javascript" src="/javascript/fileFunctions.js"></script>
+    <script type="text/javascript" src="/javascript/modalFunctions.js"></script>
+
+    <style>
+      .overlay {
+            position: absolute;
+            z-index: 1000;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        button {
+            margin: 10px;
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-close {
+            background-color: red;
+            color: white;
+        }
+    </style>
   </head>
   <body>
     <script>
@@ -16,12 +64,23 @@
           natives: {
             Java_com_cburch_logisim_gui_main_ExportImage_DownloadFile,
             Java_com_cburch_logisim_gui_menu_Popups_SendFileData,
-            Java_com_cburch_logisim_proj_ProjectActions_SendFileData
+            Java_com_cburch_logisim_proj_ProjectActions_SendFileData,
+            Java_com_cburch_logisim_gui_menu_MenuFile_showFileChoiceDialog
           },
         });
         cheerpjCreateDisplay(800, 800);
         await cheerpjRunJar("/app/logisim.jar");
       })();
     </script>
+
+    <div id="fileModal" class="overlay">
+      <div class="modal">
+          <p id="modalMessage">Would you like to open a file from Local Storage or Cache Memory?</p>
+          <button class="btn-primary" onclick="openFolder()">Local Storage</button>
+          <button class="btn-secondary" id="btn-secondary">Cache Memory</button>
+          <br>
+          <button class="btn-close" onclick="closeFileChoicePopup()">Cancel</button>
+      </div>
+    </div>
   </body>
 </html>

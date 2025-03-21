@@ -115,7 +115,8 @@ class MenuFile extends Menu implements ActionListener {
 		if (src == newi) {
 			ProjectActions.doNew(proj);
 		} else if (src == open) {
-			ProjectActions.doOpen(proj == null ? null : proj.getFrame().getCanvas(), proj);
+			// Call JS to open selection window
+			showFileChoiceDialog(this);
 		} else if (src == close) {
 			Frame frame = proj.getFrame();
 			if (frame.confirmClose()) {
@@ -133,5 +134,13 @@ class MenuFile extends Menu implements ActionListener {
 		} else if (src == quit) {
 			ProjectActions.doQuit();
 		}
+	}
+
+	public static native void showFileChoiceDialog(MenuFile menu);
+
+	public void cacheOpen() {
+		Project proj = menubar.getProject();
+		System.out.println("Logisim: Begin open project");
+		ProjectActions.doOpen(proj == null ? null : proj.getFrame().getCanvas(), proj);
 	}
 }
