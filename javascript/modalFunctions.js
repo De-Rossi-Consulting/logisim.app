@@ -1,7 +1,7 @@
 function openFileChoicePopup(menu) {
-    document.getElementById("btn-secondary").onclick = async(ev) => { 
+    document.getElementById("btn-secondary").onclick = (ev) => { 
         closeFileChoicePopup(); 
-        await menu.cacheOpen(); 
+        openCache(menu) 
     }
     document.getElementById("fileModal").style.display = "flex";
 }

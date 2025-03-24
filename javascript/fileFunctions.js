@@ -104,3 +104,7 @@ async function openFolder() {
     console.log("TODO")
     closeFileChoicePopup()
 }
+
+async function openCache(menu) {
+    await menu.cacheOpen();
+}

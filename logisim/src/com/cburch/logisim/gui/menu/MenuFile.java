@@ -139,8 +139,8 @@ class MenuFile extends Menu implements ActionListener {
 	public static native void showFileChoiceDialog(MenuFile menu);
 
 	public void cacheOpen() {
-		Project proj = menubar.getProject();
 		System.out.println("Logisim: Begin open project");
+		Project proj = menubar.getProject();
 		ProjectActions.doOpen(proj == null ? null : proj.getFrame().getCanvas(), proj);
 	}
 }
