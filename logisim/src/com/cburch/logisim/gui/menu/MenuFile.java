@@ -10,6 +10,7 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
+import javax.swing.*;
 
 import com.cburch.logisim.gui.main.Frame;
 import com.cburch.logisim.gui.opts.OptionsFrame;
@@ -17,6 +18,8 @@ import com.cburch.logisim.gui.prefs.PreferencesFrame;
 import com.cburch.logisim.proj.Project;
 import com.cburch.logisim.proj.ProjectActions;
 import com.cburch.logisim.util.MacCompatibility;
+
+import com.wasm.gui.MemorySelectDialog;
 
 class MenuFile extends Menu implements ActionListener {
 	private LogisimMenuBar menubar;
@@ -115,8 +118,13 @@ class MenuFile extends Menu implements ActionListener {
 		if (src == newi) {
 			ProjectActions.doNew(proj);
 		} else if (src == open) {
-			// Call JS to open selection window
-			showFileChoiceDialog(this);
+			int option = MemorySelectDialog.ShowMemorySelectDialog(proj);
+			if (option == 1) {
+				cacheOpen();
+			}
+			else {
+				openFolder();
+			}
 		} else if (src == close) {
 			Frame frame = proj.getFrame();
 			if (frame.confirmClose()) {
@@ -136,7 +144,7 @@ class MenuFile extends Menu implements ActionListener {
 		}
 	}
 
-	public static native void showFileChoiceDialog(MenuFile menu);
+	public static native void openFolder();
 
 	public void cacheOpen() {
 		System.out.println("Logisim: Begin open project");

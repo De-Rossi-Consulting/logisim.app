@@ -96,15 +96,6 @@ async function Java_com_cburch_logisim_proj_ProjectActions_SendFileData(lib, dat
 }
 
 //open menu popup
-async function Java_com_cburch_logisim_gui_menu_MenuFile_showFileChoiceDialog(lib, menu) {
-    openFileChoicePopup(menu)
-}
-
-async function openFolder() {
+async function Java_com_cburch_logisim_gui_menu_MenuFile_openFolder(lib) {
     console.log("TODO")
-    closeFileChoicePopup()
-}
-
-async function openCache(menu) {
-    await menu.cacheOpen();
 }
