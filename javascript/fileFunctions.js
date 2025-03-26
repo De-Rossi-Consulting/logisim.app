@@ -27,12 +27,12 @@ async function Java_com_cburch_logisim_gui_main_ExportImage_DownloadFile(lib, fi
 }
 
 // Save
-async function Java_com_cburch_logisim_gui_menu_Popups_SendFileData(lib, data, name, logisimFile, saveAs) {
+async function Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData(lib, data, name, logisimFile, saveAs) {
     console.log("Recieved file to save");
     const fileHandlerId = await logisimFile.getFileHandleId()
 
     // Check if we are 'saving' or 'saving as'
-    if (saveAs || !fileHandlerId || fileHandlerId == "") { // Save as
+    if (saveAs) { // Save as
         // Write the file to system memory
         try {
             const handler = await window.showSaveFilePicker({
@@ -49,9 +49,14 @@ async function Java_com_cburch_logisim_gui_menu_Popups_SendFileData(lib, data, n
             
             // Save the file handler for later use so we can write to it again
             //using indexedDB so we can save without requesting permissions
-            const id = crypto.randomUUID()
-            await logisimFile.setFileHandleId(id);
-            saveFileHandler(handler, id)
+            if (fileHandlerId == ""){
+                const id = crypto.randomUUID();
+                await logisimFile.setFileHandleId(id);
+                saveFileHandler(handler, id);
+            }
+            else {
+                saveFileHandler(handler, fileHandlerId);
+            }
 
             console.log("File saved successfully!");
         } catch (error) {
@@ -92,7 +97,7 @@ async function saveFileHandler(fileHandler, id) {
 // save function
 async function Java_com_cburch_logisim_proj_ProjectActions_SendFileData(lib, data, name, logisimFile) {
     console.log("Saving file")
-    await Java_com_cburch_logisim_gui_menu_Popups_SendFileData(lib, data, name, logisimFile, false)
+    await Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData(lib, data, name, logisimFile, false)
 }
 
 //open menu popup

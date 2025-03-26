@@ -19,7 +19,15 @@ import com.cburch.logisim.proj.Project;
 import com.cburch.logisim.proj.ProjectActions;
 import com.cburch.logisim.util.MacCompatibility;
 
+import com.cburch.logisim.file.XmlWriter;
+import com.cburch.logisim.file.Loader;
+import com.cburch.logisim.file.LogisimFile;
+
 import com.wasm.gui.MemorySelectDialog;
+
+import java.util.UUID;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 class MenuFile extends Menu implements ActionListener {
 	private LogisimMenuBar menubar;
@@ -135,8 +143,37 @@ class MenuFile extends Menu implements ActionListener {
 		} else if (src == save) {
 			ProjectActions.doSave(proj);
 		} else if (src == saveAs) {
-			Popups.forFileSystemChoicePopup(proj).show(this.getComponent(), this.getX(), this.getY());
-			//ProjectActions.doSaveAs(proj);
+			int option = MemorySelectDialog.ShowMemorySelectDialog(proj);
+			if (option == 1) {
+				ProjectActions.doSaveAs(proj);
+			}
+			else {
+				try {
+					UUID uuid = UUID.randomUUID();
+        			String uuidS = uuid.toString();
+					//make the file to send to js 
+					LogisimFile file = proj.getLogisimFile();
+					file.setFileHandleId(uuidS);
+					Loader loader = proj.getLogisimFile().getLoader();
+
+					ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+
+					XmlWriter.write(file, byteStream, loader);
+					byte[] fileData = byteStream.toByteArray();
+
+					//call js
+					SendFileData(fileData, file.getName(), file, true);
+
+					byteStream.close();
+					
+					file.setSavedLocally(true);
+					//Will need to retrieve the filepath from CheerpJ
+				}
+				catch (Exception ex) {
+					Loader loader = proj.getLogisimFile().getLoader();
+					loader.showError("Error sending file data");
+				}
+			}
 		} else if (src == prefs) {
 			PreferencesFrame.showPreferences();
 		} else if (src == quit) {
@@ -151,4 +188,6 @@ class MenuFile extends Menu implements ActionListener {
 		Project proj = menubar.getProject();
 		ProjectActions.doOpen(proj == null ? null : proj.getFrame().getCanvas(), proj);
 	}
+
+	public static native void SendFileData(byte[] data, String name, LogisimFile logisimFile, boolean saveAs);
 }

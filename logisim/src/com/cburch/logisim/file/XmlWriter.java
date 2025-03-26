@@ -67,6 +67,7 @@ public class XmlWriter {
 	}
 
 	private LogisimFile file;
+	private String FileHandleId;
 	private Document doc;
 	private LibraryLoader loader;
 	private HashMap<Library,String> libs = new HashMap<Library,String>();
@@ -75,6 +76,7 @@ public class XmlWriter {
 		this.file = file;
 		this.doc = doc;
 		this.loader = loader;
+		this.FileHandleId = file.getFileHandleId();
 	}
 
 	Element fromLogisimFile() {
@@ -84,6 +86,7 @@ public class XmlWriter {
 				+ "loaded by Logisim (http://www.cburch.com/logisim/).\n"));
 		ret.setAttribute("version", "1.0");
 		ret.setAttribute("source", Main.VERSION_NAME);
+		ret.setAttribute("FileHandleId", this.FileHandleId);
 
 		for (Library lib : file.getLibraries()) {
 			Element elt = fromLibrary(lib);
