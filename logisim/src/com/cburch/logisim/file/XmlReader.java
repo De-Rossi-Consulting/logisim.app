@@ -80,8 +80,11 @@ class XmlReader {
 
 			// set the filehandler from the file
 			String FileHandleId = elt.getAttribute("FileHandleId");
-			file.setFileHandleId(FileHandleId);
-			//System.out.println(FileHandleId);
+			if (FileHandleId != "") {
+				file.setFileHandleId(FileHandleId);
+				file.setSavedLocally(true);
+			}
+			System.out.println(FileHandleId);
 
 			// first, load the sublibraries
 			for (Element o : XmlIterator.forChildElements(elt, "lib")) {

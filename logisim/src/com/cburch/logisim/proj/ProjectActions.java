@@ -317,6 +317,9 @@ public class ProjectActions {
 
 	// returns true if save is completed
 	public static boolean doSaveAs(Project proj) {
+		LogisimFile file = proj.getLogisimFile();
+		file.setFileHandleId("");
+		file.setSavedLocally(false);
 		Loader loader = proj.getLogisimFile().getLoader();
 		JFileChooser chooser = loader.createChooser();
 		chooser.setFileFilter(Loader.LOGISIM_FILTER);
