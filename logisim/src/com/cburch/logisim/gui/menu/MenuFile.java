@@ -28,6 +28,7 @@ import com.wasm.gui.MemorySelectDialog;
 import java.util.UUID;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.awt.Component;
 
 class MenuFile extends Menu implements ActionListener {
 	private LogisimMenuBar menubar;
@@ -131,7 +132,7 @@ class MenuFile extends Menu implements ActionListener {
 				cacheOpen();
 			}
 			else {
-				openFolder();
+				openFolder(proj == null ? null : proj.getFrame().getCanvas(), proj);
 			}
 		} else if (src == close) {
 			Frame frame = proj.getFrame();
@@ -181,13 +182,24 @@ class MenuFile extends Menu implements ActionListener {
 		}
 	}
 
-	public static native void openFolder();
+	public static native void openFolder(Component parent, Project proj);
 
 	public void cacheOpen() {
 		System.out.println("Logisim: Begin open project");
 		Project proj = menubar.getProject();
 		ProjectActions.doOpen(proj == null ? null : proj.getFrame().getCanvas(), proj);
 	}
+
+	/*public void localOpen(byte[] bytes) {
+		Project proj = menubar.getProject();
+		try {
+			System.out.println("Logisim: starting to read file");
+			ProjectActions.doLocalOpen(proj == null ? null : proj.getFrame().getCanvas(), proj, bytes);
+		} catch (Exception e) {
+			System.out.println("Logisim Error: " + e.getMessage());
+		}
+		return;
+	}*/
 
 	public static native void SendFileData(byte[] data, String name, LogisimFile logisimFile, boolean saveAs);
 }

@@ -32,6 +32,9 @@ import com.cburch.logisim.file.XmlWriter;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
 public class ProjectActions {
 	private ProjectActions() { }
 	
@@ -236,6 +239,67 @@ public class ProjectActions {
 					Strings.get("fileOpenErrorTitle"),
 					JOptionPane.ERROR_MESSAGE);
 			}
+			return null;
+		}
+		
+		Frame frame = proj.getFrame();
+		if (frame == null) {
+			frame = createFrame(baseProject, proj);
+		}
+		frame.setVisible(true);
+		frame.toFront();
+		frame.getCanvas().requestFocus();
+		proj.getLogisimFile().getLoader().setParent(frame);
+		return proj;
+	}
+
+	// open a byte stream
+	public static Project doLocalOpen(Component parent, Project baseProject, Object[] f) {
+		// TODO implement my own findProjectFor function 
+		Project proj = baseProject;
+		
+		// Convert Object[] to byte[]
+		byte[] byteArray = new byte[f.length];
+		for (int i = 0; i < f.length; i++) {
+			if (f[i] instanceof Byte) {
+				byteArray[i] = (Byte) f[i]; // Cast and store byte value
+			} else {
+				throw new IllegalArgumentException("Invalid array element type, expected Byte");
+			}
+		}
+		Loader loader = proj.getLogisimFile().getLoader();
+		ByteArrayInputStream data = new ByteArrayInputStream(byteArray);
+		if (baseProject != null && baseProject.isStartupScreen()) {
+			proj = baseProject;
+			proj.setStartupScreen(false);
+			loader = baseProject.getLogisimFile().getLoader();
+		} else {
+			loader = new Loader(baseProject == null ? parent : baseProject.getFrame());
+		}
+
+		try {
+			LogisimFile lib = loader.openLogisimFile(data);
+			if (lib == null) return null;
+			if (proj == null) {
+				proj = new Project(lib);
+			} else {
+				proj.setLogisimFile(lib);
+			}
+		} catch (LoadFailedException ex) {
+			if (!ex.isShown()) {
+				JOptionPane.showMessageDialog(parent,
+					StringUtil.format(Strings.get("fileOpenError"),
+						ex.toString()),
+					Strings.get("fileOpenErrorTitle"),
+					JOptionPane.ERROR_MESSAGE);
+			}
+			return null;
+		} catch (IOException ex) {
+			JOptionPane.showMessageDialog(parent,
+					StringUtil.format(Strings.get("fileOpenError"),
+						ex.toString()),
+					Strings.get("fileOpenErrorTitle"),
+					JOptionPane.ERROR_MESSAGE);
 			return null;
 		}
 		

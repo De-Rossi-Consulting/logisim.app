@@ -96,11 +96,51 @@ async function saveFileHandler(fileHandler, id) {
 
 // save function
 async function Java_com_cburch_logisim_proj_ProjectActions_SendFileData(lib, data, name, logisimFile) {
-    console.log("Saving file")
+    console.log("Saving file");
     await Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData(lib, data, name, logisimFile, false)
 }
 
 //open menu popup
-async function Java_com_cburch_logisim_gui_menu_MenuFile_openFolder(lib) {
-    console.log("TODO")
+async function Java_com_cburch_logisim_gui_menu_MenuFile_openFolder(lib, parent, proj) {
+    try {
+        const [handler] = await window.showOpenFilePicker({
+            suggestedName: "",
+            types: [{
+                descrption: "Logisim Circuit Files",
+                accept: {"application/octet-stream" : [".circ"]}
+            }]
+        });
+        
+        if (!handler) {
+            console.log("No file selected.");
+            return;
+        }
+        
+        console.log("Openning file");
+        const file = await handler.getFile();
+        const arrayBuffer = await file.arrayBuffer();
+        const uint8Array = new Uint8Array(arrayBuffer);
+        
+        // convert to Java type
+        console.log("Preparing file for sending to Java");
+        //const lib = await cheerpjRunLibrary("/app/logisim.jar");
+        const Byte = await lib.java.lang.Byte;
+        const ArrayList = await lib.java.util.ArrayList;
+        
+        console.log("Building byte array");
+        const array = await new ArrayList();
+        for (let i = 0; i < uint8Array.length; i++) {
+            const b = await new Byte(uint8Array[i]);
+            await array.add(b);
+        }
+        console.log("Converting array");
+        const javaByteArray = await array.toArray();
+        
+        console.log("Data prepared... calling logisim method");
+    
+        const ProjectActions = await lib.com.cburch.logisim.proj.ProjectActions;
+        const pa = await ProjectActions.doLocalOpen(parent, proj, javaByteArray);
+    } catch(e) {
+        console.log("Error openning file: ", e);
+    }
 }
