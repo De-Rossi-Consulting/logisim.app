@@ -14,6 +14,8 @@ import java.util.WeakHashMap;
 import com.cburch.logisim.tools.Library;
 import com.cburch.logisim.util.StringUtil;
 
+import java.io.InputStream;
+
 class LibraryManager {
 	public static final LibraryManager instance = new LibraryManager();
 
@@ -172,6 +174,18 @@ class LibraryManager {
 		LogisimProjectDescriptor desc = new LogisimProjectDescriptor(toRead);
 		fileMap.put(desc, new WeakReference<LoadedLibrary>(ret));
 		invMap.put(ret, desc);
+		return ret;
+	}
+
+	// Same as above but without any levels of caching due to its reliance on the file type
+	public LoadedLibrary loadLogisimLibrary(Loader loader, InputStream input) {
+		LoadedLibrary ret = null;
+		try {
+			ret = new LoadedLibrary(loader.loadLogisimFile(input));
+		} catch (LoadFailedException e) {
+			loader.showError(e.getMessage());
+			return null;
+		}
 		return ret;
 	}
 	

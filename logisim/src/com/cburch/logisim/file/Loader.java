@@ -160,6 +160,15 @@ public class Loader implements LibraryLoader {
 		}
 		return ret;
 	}
+
+	public Library loadLocalLogisimLibrary(InputStream data) {
+		LoadedLibrary ret = LibraryManager.instance.loadLogisimLibrary(this, data);
+		if (ret != null) {
+			LogisimFile retBase = (LogisimFile) ret.getBase();
+			showMessages(retBase);
+		}
+		return ret;
+	}
 	
 	public Library loadJarLibrary(File file, String className) {
 		File actual = getSubstitution(file);
@@ -284,6 +293,17 @@ public class Loader implements LibraryLoader {
 			filesOpening.pop();
 		}
 		ret.setName(toProjectName(actual));
+		return ret;
+	}
+
+	LogisimFile loadLogisimFile(InputStream reader) throws LoadFailedException {
+		LogisimFile ret = null;
+		try {
+			ret = LogisimFile.load(reader, this);
+		} catch (IOException e) {
+			throw new LoadFailedException(StringUtil.format(Strings.get("logisimLoadError"),
+					"", e.toString()));
+		}
 		return ret;
 	}
 

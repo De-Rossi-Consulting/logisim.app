@@ -12,6 +12,8 @@ import javax.swing.JMenuItem;
 
 import com.cburch.logisim.proj.Project;
 
+import com.wasm.gui.MemorySelectDialog;
+
 class MenuProject extends Menu {
 	private class MyListener
 			implements ActionListener {
@@ -21,7 +23,13 @@ class MenuProject extends Menu {
 			if (src == loadBuiltin) {
 				ProjectLibraryActions.doLoadBuiltinLibrary(proj);
 			} else if (src == loadLogisim) {
-				ProjectLibraryActions.doLoadLogisimLibrary(proj);
+				int option = MemorySelectDialog.ShowMemorySelectDialog(proj);
+				if (option == 1) {
+					ProjectLibraryActions.doLoadLogisimLibrary(proj);
+				}
+				else {
+					openFolder(proj);
+				}
 			} else if (src == loadJar) {
 				ProjectLibraryActions.doLoadJarLibrary(proj);
 			} else if (src == unload) {
@@ -149,4 +157,6 @@ class MenuProject extends Menu {
 				|| stats.hasListeners());
 		menubar.fireEnableChanged();
 	}
+
+	public static native void openFolder(Project proj);
 }

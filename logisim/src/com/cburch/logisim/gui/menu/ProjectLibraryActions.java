@@ -21,6 +21,9 @@ import com.cburch.logisim.file.LogisimFileActions;
 import com.cburch.logisim.proj.Project;
 import com.cburch.logisim.tools.Library;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
 public class ProjectLibraryActions {
 	private ProjectLibraryActions() { }
 	
@@ -90,6 +93,25 @@ public class ProjectLibraryActions {
 				proj.doAction(LogisimFileActions.loadLibrary(lib));
 			}
 		}
+	}
+
+	public static void doLoadLocalLogisimLibrary(Project proj, Object[] f) {
+		// Convert Object[] to byte[]
+		byte[] byteArray = new byte[f.length];
+		for (int i = 0; i < f.length; i++) {
+			if (f[i] instanceof Byte) {
+				byteArray[i] = (Byte) f[i]; // Cast and store byte value
+			} else {
+				throw new IllegalArgumentException("Invalid array element type, expected Byte");
+			}
+		}
+		Loader loader = proj.getLogisimFile().getLoader();
+		ByteArrayInputStream data = new ByteArrayInputStream(byteArray);
+
+		Library lib = loader.loadLocalLogisimLibrary(data);
+			if (lib != null) {
+				proj.doAction(LogisimFileActions.loadLibrary(lib));
+			}
 	}
 	
 	public static void doLoadJarLibrary(Project proj) {
