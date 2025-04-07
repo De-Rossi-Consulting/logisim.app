@@ -178,10 +178,10 @@ class LibraryManager {
 	}
 
 	// Same as above but without any levels of caching due to its reliance on the file type
-	public LoadedLibrary loadLogisimLibrary(Loader loader, InputStream input) {
+	public LoadedLibrary loadLogisimLibrary(Loader loader, InputStream input, String filename) {
 		LoadedLibrary ret = null;
 		try {
-			ret = new LoadedLibrary(loader.loadLogisimFile(input));
+			ret = new LoadedLibrary(loader.loadLogisimFile(input, filename));
 		} catch (LoadFailedException e) {
 			loader.showError(e.getMessage());
 			return null;

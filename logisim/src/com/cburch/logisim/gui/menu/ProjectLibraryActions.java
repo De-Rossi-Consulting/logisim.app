@@ -95,7 +95,7 @@ public class ProjectLibraryActions {
 		}
 	}
 
-	public static void doLoadLocalLogisimLibrary(Project proj, Object[] f) {
+	public static void doLoadLocalLogisimLibrary(Project proj, Object[] f, String filename) {
 		// Convert Object[] to byte[]
 		byte[] byteArray = new byte[f.length];
 		for (int i = 0; i < f.length; i++) {
@@ -108,7 +108,7 @@ public class ProjectLibraryActions {
 		Loader loader = proj.getLogisimFile().getLoader();
 		ByteArrayInputStream data = new ByteArrayInputStream(byteArray);
 
-		Library lib = loader.loadLocalLogisimLibrary(data);
+		Library lib = loader.loadLocalLogisimLibrary(data, filename);
 			if (lib != null) {
 				proj.doAction(LogisimFileActions.loadLibrary(lib));
 			}

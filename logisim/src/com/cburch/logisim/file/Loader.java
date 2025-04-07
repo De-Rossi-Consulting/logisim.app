@@ -161,8 +161,8 @@ public class Loader implements LibraryLoader {
 		return ret;
 	}
 
-	public Library loadLocalLogisimLibrary(InputStream data) {
-		LoadedLibrary ret = LibraryManager.instance.loadLogisimLibrary(this, data);
+	public Library loadLocalLogisimLibrary(InputStream data, String filename) {
+		LoadedLibrary ret = LibraryManager.instance.loadLogisimLibrary(this, data, filename);
 		if (ret != null) {
 			LogisimFile retBase = (LogisimFile) ret.getBase();
 			showMessages(retBase);
@@ -296,7 +296,7 @@ public class Loader implements LibraryLoader {
 		return ret;
 	}
 
-	LogisimFile loadLogisimFile(InputStream reader) throws LoadFailedException {
+	LogisimFile loadLogisimFile(InputStream reader, String filename) throws LoadFailedException {
 		LogisimFile ret = null;
 		try {
 			ret = LogisimFile.load(reader, this);
@@ -304,6 +304,7 @@ public class Loader implements LibraryLoader {
 			throw new LoadFailedException(StringUtil.format(Strings.get("logisimLoadError"),
 					"", e.toString()));
 		}
+		ret.setName(toProjectName(filename));
 		return ret;
 	}
 
@@ -440,6 +441,15 @@ public class Loader implements LibraryLoader {
 
 	private String toProjectName(File file) {
 		String ret = file.getName();
+		if (ret.endsWith(LOGISIM_EXTENSION)) {
+			return ret.substring(0, ret.length() - LOGISIM_EXTENSION.length());
+		} else {
+			return ret;
+		}
+	}
+
+	private String toProjectName(String name) {
+		String ret = name;
 		if (ret.endsWith(LOGISIM_EXTENSION)) {
 			return ret.substring(0, ret.length() - LOGISIM_EXTENSION.length());
 		} else {

@@ -163,6 +163,7 @@ async function Java_com_cburch_logisim_gui_menu_MenuProject_openFolder(lib, proj
         
         console.log("Openning file");
         const file = await handler.getFile();
+        const filename = await file.name;
         const arrayBuffer = await file.arrayBuffer();
         const uint8Array = new Uint8Array(arrayBuffer);
         
@@ -183,7 +184,7 @@ async function Java_com_cburch_logisim_gui_menu_MenuProject_openFolder(lib, proj
         
         console.log("Data prepared... calling logisim method");
         const ProjectLibraryActions = await lib.com.cburch.logisim.gui.menu.ProjectLibraryActions;
-        const pa = await ProjectLibraryActions.doLoadLocalLogisimLibrary(proj, javaByteArray);
+        const pa = await ProjectLibraryActions.doLoadLocalLogisimLibrary(proj, javaByteArray, filename);
     }
     catch(e) {
         console.log("Error openning file: ", e);
