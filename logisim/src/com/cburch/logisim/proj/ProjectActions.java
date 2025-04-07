@@ -254,7 +254,7 @@ public class ProjectActions {
 	}
 
 	// open a byte stream
-	public static Project doLocalOpen(Component parent, Project baseProject, Object[] f) {
+	public static Project doLocalOpen(Component parent, Project baseProject, Object[] f, String filename) {
 		// TODO implement my own findProjectFor function 
 		Project proj = baseProject;
 		
@@ -278,7 +278,7 @@ public class ProjectActions {
 		}
 
 		try {
-			LogisimFile lib = loader.openLogisimFile(data);
+			LogisimFile lib = loader.openLogisimFile(data, filename);
 			if (lib == null) return null;
 			if (proj == null) {
 				proj = new Project(lib);

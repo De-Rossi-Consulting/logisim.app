@@ -151,6 +151,20 @@ public class Loader implements LibraryLoader {
 		return ret;
 	}
 
+	// for manually setting the filename
+	public LogisimFile openLogisimFile(InputStream reader, String filename)
+			throws LoadFailedException, IOException {
+		LogisimFile ret = null;
+		try {
+			ret = LogisimFile.load(reader, this);
+		} catch (LoaderException e) {
+			return null;
+		}
+		ret.setName(toProjectName(filename));
+		showMessages(ret);
+		return ret;
+	}
+
 	public Library loadLogisimLibrary(File file) {
 		File actual = getSubstitution(file);
 		LoadedLibrary ret = LibraryManager.instance.loadLogisimLibrary(this, actual);
