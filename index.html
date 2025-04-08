@@ -35,7 +35,7 @@
       </nav>
     </header>
 
-    <div class="cheerp-container">
+    <div id="cheerp-container" class="absolute top-[3.5rem] right-0 left-0 bottom-0 shadow-none overflow-hidden">
       <script>
         (async function () {
           await cheerpjInit({
@@ -48,7 +48,7 @@
               Java_com_cburch_logisim_gui_menu_MenuProject_openFolder,
             },
           });
-          cheerpjCreateDisplay(-1, -1, document.body.getElementsByClassName("cheerp-container")[0]);
+          cheerpjCreateDisplay(-1, -1, document.getElementById("cheerp-container"));
           await cheerpjRunJar("/app/logisim.jar");
         })();
       </script>

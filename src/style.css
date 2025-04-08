@@ -2,16 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.cheerp-container {
-    position: absolute;
-    top: 3.5rem;
-    right: 0;
-    left: 0;
-    bottom: 0;
-    box-shadow: none;
-    overflow: hidden;
-}
-
 @media (max-width: 768px) {
     .header {
         height: auto;
