@@ -10,30 +10,31 @@
     <link rel="stylesheet" href="src/styleOut.css">
   </head>
   <body>
-    <div class="header">
-      <div class="header-logo-container">
+    <header class="absolute top-0 right-0 left-0 h-14 flex items-center justify-between bg-slate-900 md:px-8 z-50">
+      <!-- Logo -->
+      <div class="flex items-center">
         <a href="https://drs.software/">
-          <img src="/src/images/drs-logo-header.svg" alt="DRS Company logo" class="header-logo">
+          <img src="/src/images/drs-logo-header.svg" alt="DRS Company logo" class="h-12" />
         </a>
       </div>
-      <div class="header-links">
-        <div class="link-container">
-          <a href="https://drs.software/" class="header-link">Home</a>
-          <div class="link-underline"></div>
+    
+      <!-- Navigation links -->
+      <nav class="flex items-center gap-8 mr-4 md:gap-8">
+        <div class="relative flex flex-col items-center justify-center group">
+          <a href="https://drs.software/" class="text-white font-medium text-base font-sans pt-[2px]">Home</a>
+          <div class="bg-cyan-400 w-0 h-[2px] transition-all duration-300 mt-1 group-hover:w-4/5"></div>
         </div>
-        <div class="link-container">
-          <a href="https://drs.software/about" class="header-link">About</a>
-          <div class="link-underline"></div>
+        <div class="relative flex flex-col items-center justify-center group">
+          <a href="https://drs.software/about" class="text-white font-medium text-base font-sans pt-[2px]">About</a>
+          <div class="bg-cyan-400 w-0 h-[2px] transition-all duration-300 mt-1 group-hover:w-4/5"></div>
         </div>
-        <div class="link-container">
-          <a href="https://drs.software/blog/" class="header-link">How was this</a>
-          <div class="link-underline"></div>
+        <div class="relative flex flex-col items-center justify-center group">
+          <a href="https://drs.software/blog/" class="text-white font-medium text-base font-sans pt-[2px]">How was this made?</a>
+          <div class="bg-cyan-400 w-0 h-[2px] transition-all duration-300 mt-1 group-hover:w-4/5"></div>
         </div>
-      </div>
-    </div>
-    <div class="footer">
-      <span class="footer-text">Made with <span class="heart">❤️</span> by DRS Software</span>
-    </div>
+      </nav>
+    </header>
+
     <div class="cheerp-container">
       <script>
         (async function () {
@@ -52,5 +53,16 @@
         })();
       </script>
     </div>
+
+    <footer class="absolute bottom-0 right-0 left-0 h-7 flex items-center justify-center bg-slate-900 px-4 md:px-8 z-50">
+      <div class="flex items-center gap-8 text-white text-sm">
+        <a href="https://drs.software/" class="flex items-center gap-1 font-medium">
+          Made with <span role="img" aria-label="love">❤️</span> by DRS Software
+        </a>
+        <a href="https://cheerpj.com/" class="flex items-center gap-1 font-medium">
+          Powered by <img src="/src/images/CJLogo.webp" alt="CheerpJ logo" class="h-4" /> CheerpJ
+        </a>
+      </div>
+    </footer>    
   </body>
 </html>
