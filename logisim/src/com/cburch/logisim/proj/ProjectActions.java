@@ -28,12 +28,15 @@ import com.cburch.logisim.util.StringUtil;
 
 import com.cburch.logisim.proj.ProjectActions;
 import com.cburch.logisim.file.XmlWriter;
+import com.cburch.logisim.gui.menu.MenuFile;
+import com.wasm.gui.MemorySelectDialog;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.UUID;
+import java.awt.Component;
 
 public class ProjectActions {
 	private ProjectActions() { }
@@ -374,7 +377,37 @@ public class ProjectActions {
 		if (proj.getLogisimFile().getIsSavedLocally()) return doLocalSave(proj);
 		Loader loader = proj.getLogisimFile().getLoader();
 		File f = loader.getMainFile();
-		if (f == null) return doSaveAs(proj);
+		if (f == null) 
+		{
+			int option = MemorySelectDialog.ShowMemorySelectDialog(proj);
+			if (option == 1) {
+				return doSaveAs(proj);
+			}
+			else {
+				try {
+					UUID uuid = UUID.randomUUID();
+        			String uuidS = uuid.toString();
+					//make the file to send to js 
+					LogisimFile file = proj.getLogisimFile();
+					file.setFileHandleId(uuidS);
+
+					ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+
+					XmlWriter.write(file, byteStream, loader);
+					byte[] fileData = byteStream.toByteArray();
+
+					//call js
+					MenuFile.SendFileData(fileData, file.getName(), file, true);
+
+					byteStream.close();
+					return true;
+				}
+				catch (Exception ex) {
+					loader.showError("Error sending file data");
+					return false;
+				}
+			}
+		}
 		else return doSave(proj, f);
 	}
 	

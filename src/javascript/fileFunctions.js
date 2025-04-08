@@ -58,6 +58,8 @@ async function Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData(lib, data,
                 saveFileHandler(handler, fileHandlerId);
             }
 
+            logisimFile.setSavedLocally(true);
+
             console.log("File saved successfully!");
         } catch (error) {
             console.error("Failed to save file: ", error)

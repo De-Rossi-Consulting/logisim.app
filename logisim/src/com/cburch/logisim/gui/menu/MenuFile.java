@@ -30,7 +30,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.awt.Component;
 
-class MenuFile extends Menu implements ActionListener {
+public class MenuFile extends Menu implements ActionListener {
 	private LogisimMenuBar menubar;
 	private JMenuItem newi = new JMenuItem();
 	private JMenuItem open = new JMenuItem();
@@ -166,9 +166,6 @@ class MenuFile extends Menu implements ActionListener {
 					SendFileData(fileData, file.getName(), file, true);
 
 					byteStream.close();
-					
-					file.setSavedLocally(true);
-					//Will need to retrieve the filepath from CheerpJ
 				}
 				catch (Exception ex) {
 					Loader loader = proj.getLogisimFile().getLoader();
