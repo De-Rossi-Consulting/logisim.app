@@ -4,26 +4,53 @@
     <meta charset="utf-8" />
     <title>Logisim Wasm</title>
     <script src="https://cjrtnc.leaningtech.com/3.1/cj3loader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/idb@8/build/umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/idb@8/build/umd.js"></script>
     <script>window.idb = idb;</script>
-    <script type="text/javascript" src="/javascript/fileFunctions.js"></script>
+    <script type="text/javascript" src="src/javascript/fileFunctions.js"></script>
+    <link rel="stylesheet" href="src/styleOut.css">
   </head>
   <body>
-    <script>
-      (async function () {
-        await cheerpjInit({
-          version: 8,
-          natives: {
-            Java_com_cburch_logisim_gui_main_ExportImage_DownloadFile,
-            Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData,
-            Java_com_cburch_logisim_proj_ProjectActions_SendFileData,
-            Java_com_cburch_logisim_gui_menu_MenuFile_openFolder,
-            Java_com_cburch_logisim_gui_menu_MenuProject_openFolder,
-          },
-        });
-        cheerpjCreateDisplay(800, 800);
-        await cheerpjRunJar("/app/logisim.jar");
-      })();
-    </script>
+    <div class="header">
+      <div class="header-logo-container">
+        <a href="https://drs.software/">
+          <img src="/src/images/drs-logo-header.svg" alt="DRS Company logo" class="header-logo">
+        </a>
+      </div>
+      <div class="header-links">
+        <div class="link-container">
+          <a href="https://drs.software/" class="header-link">Home</a>
+          <div class="link-underline"></div>
+        </div>
+        <div class="link-container">
+          <a href="https://drs.software/about" class="header-link">About</a>
+          <div class="link-underline"></div>
+        </div>
+        <div class="link-container">
+          <a href="https://drs.software/blog/" class="header-link">How was this</a>
+          <div class="link-underline"></div>
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+      <span class="footer-text">Made with <span class="heart">❤️</span> by DRS Software</span>
+    </div>
+    <div class="cheerp-container">
+      <script>
+        (async function () {
+          await cheerpjInit({
+            version: 8,
+            natives: {
+              Java_com_cburch_logisim_gui_main_ExportImage_DownloadFile,
+              Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData,
+              Java_com_cburch_logisim_proj_ProjectActions_SendFileData,
+              Java_com_cburch_logisim_gui_menu_MenuFile_openFolder,
+              Java_com_cburch_logisim_gui_menu_MenuProject_openFolder,
+            },
+          });
+          cheerpjCreateDisplay(-1, -1, document.body.getElementsByClassName("cheerp-container")[0]);
+          await cheerpjRunJar("/app/logisim.jar");
+        })();
+      </script>
+    </div>
   </body>
 </html>

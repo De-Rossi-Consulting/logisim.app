@@ -1,0 +1,88 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.cheerp-container {
+    position: absolute;
+    top: 3.5rem;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    box-shadow: none;
+    overflow: hidden;
+}
+
+.header {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 3.5rem;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    background-color: #0f172a;
+    justify-content: space-between;
+}
+
+.header-logo-container {
+    display: flex;
+    align-items: center;
+  }
+
+.header-logo {
+    height: 3rem;
+    padding: .25rem;
+    margin-left: 1rem;
+}
+
+.header-links {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 2rem;
+    margin-right: 1rem;
+}
+
+.header-link {
+    color: white;
+    font-family: chivo;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    display: block;
+}
+
+.link-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.link-underline {
+    background-color: hsl(187, 100%, 65%);
+    width: 0;
+    height: 2px;
+    transition: width .3s;
+    margin-top: 0.25rem;
+}
+
+.link-container:hover {
+    .link-underline {
+        width: 80%;
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        height: auto;
+        padding: 1rem 1rem 2rem;
+    }
+
+    .header-links {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
