@@ -7,35 +7,35 @@
     <script src="https://cdn.jsdelivr.net/npm/idb@8/build/umd.js"></script>
     <script>window.idb = idb;</script>
     <script type="text/javascript" src="src/javascript/fileFunctions.js"></script>
-    <link rel="stylesheet" href="src/styleOut.css">
+    <link rel="stylesheet" href="src/style.css">
   </head>
   <body>
-    <header class="absolute top-0 right-0 left-0 h-14 flex items-center justify-between bg-slate-900 md:px-8 z-50">
+    <header class="absolute top-0 right-0 left-0 h-14 flex items-center justify-between bg-white md:px-8 z-50">
       <!-- Logo -->
       <div class="flex items-center">
         <a href="https://drs.software/">
-          <img src="/src/images/drs-logo-header.svg" alt="DRS Company logo" class="h-12" />
+          <img src="/src/images/drs-logo-header.svg" alt="DRS Company logo"
+            class="h-10 invert" />
         </a>
+      </div>
+      <div>
+        <h1 class="text-zinc-700 font-medium">Logisim Online</h1>
       </div>
     
       <!-- Navigation links -->
       <nav class="flex items-center gap-8 mr-4 md:gap-8">
-        <div class="relative flex flex-col items-center justify-center group">
-          <a href="https://drs.software/" class="text-white font-medium text-base font-sans pt-[2px]">Home</a>
-          <div class="bg-cyan-400 w-0 h-[2px] transition-all duration-300 mt-1 group-hover:w-4/5"></div>
-        </div>
-        <div class="relative flex flex-col items-center justify-center group">
-          <a href="https://drs.software/about" class="text-white font-medium text-base font-sans pt-[2px]">About</a>
-          <div class="bg-cyan-400 w-0 h-[2px] transition-all duration-300 mt-1 group-hover:w-4/5"></div>
-        </div>
-        <div class="relative flex flex-col items-center justify-center group">
-          <a href="https://drs.software/blog/" class="text-white font-medium text-base font-sans pt-[2px]">How was this made?</a>
-          <div class="bg-cyan-400 w-0 h-[2px] transition-all duration-300 mt-1 group-hover:w-4/5"></div>
-        </div>
+        <a href="https://drs.software/" class="text-zinc-700 font-medium
+          text-base font-sans hover:text-zinc-900">Home</a>
+        <a href="https://drs.software/about" class="text-zinc-700 font-medium
+          text-base font-sans hover:text-zinc-900">About</a>
+        <a href="https://drs.software/blog/" class="text-zinc-700 font-medium
+          text-base font-sans hover:text-zinc-900">How was this made?</a>
       </nav>
     </header>
 
-    <div id="cheerp-container" class="absolute top-[3.5rem] right-0 left-0 bottom-0 shadow-none overflow-hidden">
+    <div id="cheerp-container" class="absolute top-[3.5rem] right-0 left-0
+      bottom-0 shadow-none overflow-hidden border-t border-b border-zinc-200
+      bg-white bg-zinc-200">
       <script>
         (async function () {
           await cheerpjInit({
@@ -55,8 +55,9 @@
       </script>
     </div>
 
-    <footer class="absolute bottom-0 right-0 left-0 h-7 flex items-center justify-center bg-slate-900 px-4 md:px-8 z-50">
-      <div class="flex items-center gap-8 text-white text-sm">
+    <footer class="absolute bottom-0 right-0 left-0 h-[76px] md:h-[52px] lg:h-[30px] flex items-center
+      justify-center bg-white px-4 md:px-8 z-50 border-t border-zinc-200">
+      <div class="flex items-center gap-8 text-zinc-700 text-sm">
         <a href="https://drs.software/" class="flex items-center gap-1 font-medium">
           Made with <span role="img" aria-label="love">❤️</span> by DRS Software
         </a>

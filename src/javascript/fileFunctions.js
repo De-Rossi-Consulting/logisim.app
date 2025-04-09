@@ -1,7 +1,7 @@
 // Functions used by wasm to interact with local files
 
 // Basic file functions
-// used for reading/writing one file 
+// used for reading/writing one file
 
 // Export Image
 async function Java_com_cburch_logisim_gui_main_ExportImage_DownloadFile(lib, filename, filedata) {
@@ -46,7 +46,7 @@ async function Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData(lib, data,
             const writableStream = await handler.createWritable();
             await writableStream.write(data);
             await writableStream.close();
-            
+
             // Save the file handler for later use so we can write to it again
             //using indexedDB so we can save without requesting permissions
             if (fileHandlerId == ""){
@@ -112,24 +112,24 @@ async function Java_com_cburch_logisim_gui_menu_MenuFile_openFolder(lib, parent,
                 accept: {"application/octet-stream" : [".circ"]}
             }]
         });
-        
+
         if (!handler) {
             console.log("No file selected.");
             return;
         }
-        
+
         console.log("Openning file");
         const file = await handler.getFile();
         const filename = await file.name;
         const arrayBuffer = await file.arrayBuffer();
         const uint8Array = new Uint8Array(arrayBuffer);
-        
+
         // convert to Java type
         console.log("Preparing file for sending to Java");
         //const lib = await cheerpjRunLibrary("/app/logisim.jar");
         const Byte = await lib.java.lang.Byte;
         const ArrayList = await lib.java.util.ArrayList;
-        
+
         console.log("Building byte array");
         const array = await new ArrayList();
         for (let i = 0; i < uint8Array.length; i++) {
@@ -138,9 +138,9 @@ async function Java_com_cburch_logisim_gui_menu_MenuFile_openFolder(lib, parent,
         }
         console.log("Converting array");
         const javaByteArray = await array.toArray();
-        
+
         console.log("Data prepared... calling logisim method");
-    
+
         const ProjectActions = await lib.com.cburch.logisim.proj.ProjectActions;
         const pa = await ProjectActions.doLocalOpen(parent, proj, javaByteArray, filename);
     } catch(e) {
@@ -158,24 +158,24 @@ async function Java_com_cburch_logisim_gui_menu_MenuProject_openFolder(lib, proj
                 accept: {"application/octet-stream" : [".circ"]}
             }]
         });
-        
+
         if (!handler) {
             console.log("No file selected.");
             return;
         }
-        
+
         console.log("Openning file");
         const file = await handler.getFile();
         const filename = await file.name;
         const arrayBuffer = await file.arrayBuffer();
         const uint8Array = new Uint8Array(arrayBuffer);
-        
+
         // convert to Java type
         console.log("Preparing file for sending to Java");
         //const lib = await cheerpjRunLibrary("/app/logisim.jar");
         const Byte = await lib.java.lang.Byte;
         const ArrayList = await lib.java.util.ArrayList;
-        
+
         console.log("Building byte array");
         const array = await new ArrayList();
         for (let i = 0; i < uint8Array.length; i++) {
@@ -184,7 +184,7 @@ async function Java_com_cburch_logisim_gui_menu_MenuProject_openFolder(lib, proj
         }
         console.log("Converting array");
         const javaByteArray = await array.toArray();
-        
+
         console.log("Data prepared... calling logisim method");
         const ProjectLibraryActions = await lib.com.cburch.logisim.gui.menu.ProjectLibraryActions;
         const pa = await ProjectLibraryActions.doLoadLocalLogisimLibrary(proj, javaByteArray, filename);
@@ -205,24 +205,24 @@ async function Java_com_cburch_logisim_gui_menu_ProjectLibraryActions_openJarLib
                 accept: {"application/octet-stream" : [".jar"]}
             }]
         });
-        
+
         if (!handler) {
             console.log("No file selected.");
             return;
         }
-        
+
         console.log("Openning file");
         const file = await handler.getFile();
         const filename = await file.name;
         const arrayBuffer = await file.arrayBuffer();
         const uint8Array = new Uint8Array(arrayBuffer);
-        
+
         // convert to Java type
         console.log("Preparing file for sending to Java");
         //const lib = await cheerpjRunLibrary("/app/logisim.jar");
         const Byte = await lib.java.lang.Byte;
         const ArrayList = await lib.java.util.ArrayList;
-        
+
         console.log("Building byte array");
         const array = await new ArrayList();
         for (let i = 0; i < uint8Array.length; i++) {
