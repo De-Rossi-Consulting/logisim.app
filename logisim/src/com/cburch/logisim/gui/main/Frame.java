@@ -250,6 +250,8 @@ public class Frame extends LFrame implements LocaleListener {
 
 		this.setSize(AppPreferences.WINDOW_WIDTH.get().intValue(),
 				AppPreferences.WINDOW_HEIGHT.get().intValue());
+		Dimension screenSize = getToolkit().getScreenSize();
+		this.setBounds(0,0, screenSize.width, screenSize.height - 30);
 		Point prefPoint = getInitialLocation();
 		if (prefPoint != null) {
 			this.setLocation(prefPoint);

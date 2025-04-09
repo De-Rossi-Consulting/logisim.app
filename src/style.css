@@ -11,3 +11,13 @@
         gap: 1rem;
     }
 }
+
+div#cheerpjDisplay.status:before {
+    content: "" !important;
+    transform: translate(-50%, 0);
+}
+
+div#cheerpjDisplay.status:after {
+    content: "" !important;
+    transform: translate(-50%, 0);
+  }
