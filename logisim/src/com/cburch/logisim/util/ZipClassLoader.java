@@ -1,6 +1,15 @@
 /* Copyright (c) 2010, Carl Burch. License information is located in the
  * com.cburch.logisim.Main source code and at www.cburch.com/logisim/. */
 
+
+/*
+
+	This code had to be modified for use with CheerpJ as I was already passing input streams instead of files from the javascript side
+	ZipInputStream doesn't support random access entry so a map had to be made to cache entires
+	The old version is still here but isn't used as you cannot write java code with logisim so this never be used to open cache memory
+
+*/
+
 package com.cburch.logisim.util;
 
 import java.io.BufferedInputStream;
@@ -11,6 +20,12 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
+import java.util.Map;
+import java.util.TreeMap;
+import java.io.ByteArrayOutputStream;
+import java.util.zip.ZipInputStream;
+import java.io.InputStream;
 
 public class ZipClassLoader extends ClassLoader {
 	// This code was posted on a forum by "leukbr" on March 30, 2001.
@@ -135,57 +150,55 @@ public class ZipClassLoader extends ClassLoader {
 		}
 		
 		private void performFind(Request req) {
-			ensureZipOpen();
 			Object ret = null;
 			try {
-				if (zipFile != null) {
-					if (DEBUG >= 3) System.err.println("  retrieve ZIP entry"); //OK
-					String res = req.resource;
-					ZipEntry zipEntry = zipFile.getEntry(res);
-					if (zipEntry != null) {
-						String url = "jar:" + zipPath.toURI() + "!/" + res;
-						ret = new URL(url);
-						if (DEBUG >= 3) System.err.println("  found: " + url); //OK
+				if (zipMemoryEntries != null) { // we have an InputStream
+					if (zipMemoryEntries.containsKey(req.resource)) {
+						// Use a dummy URL
+						ret = new URL("memory", "", "/" + req.resource);
+					}
+				} else {
+					ensureZipOpen();
+					if (zipFile != null) {
+						ZipEntry zipEntry = zipFile.getEntry(req.resource);
+						if (zipEntry != null) {
+							String url = "jar:" + zipPath.toURI() + "!/" + req.resource;
+							ret = new URL(url);
+						}
 					}
 				}
 			} catch (Throwable ex) {
-				if (DEBUG >= 3) System.err.println("  error retrieving data"); //OK
 				ex.printStackTrace();
 			}
 			req.setResponse(ret);
 		}
 		
 		private void performLoad(Request req) {
-			BufferedInputStream bis = null;
-			ensureZipOpen();
 			Object ret = null;
-			try {
-				if (zipFile != null) {
-					if (DEBUG >= 3) System.err.println("  retrieve ZIP entry"); //OK
-					ZipEntry zipEntry = zipFile.getEntry(req.resource);
-					if (zipEntry != null) {
-						if (DEBUG >= 3) System.err.println("  load file"); //OK
-						byte[] result = new byte[(int) zipEntry.getSize()];
-						bis = new BufferedInputStream(zipFile.getInputStream(zipEntry));
-						try {
+			if (zipMemoryEntries != null) { // Using input stream
+				byte[] data = zipMemoryEntries.get(req.resource);
+				if (data != null) {
+					ret = data;
+				}
+			} else {
+				BufferedInputStream bis = null;
+				ensureZipOpen();
+				try {
+					if (zipFile != null) {
+						ZipEntry zipEntry = zipFile.getEntry(req.resource);
+						if (zipEntry != null) {
+							byte[] result = new byte[(int) zipEntry.getSize()];
+							bis = new BufferedInputStream(zipFile.getInputStream(zipEntry));
 							bis.read(result, 0, result.length);
 							ret = result;
-						} catch (IOException e) {
-							if (DEBUG >= 3) System.err.println("  error loading file"); //OK
 						}
 					}
-				}
-			} catch (Throwable ex) {
-				if (DEBUG >= 3) System.err.println("  error retrieving data"); //OK
-				ex.printStackTrace();
-			} finally {
-				if (bis!=null) {
+				} catch (Throwable ex) {
+					ex.printStackTrace();
+				} finally {
 					try {
-						if (DEBUG >= 3) System.err.println("  close file"); //OK
-						bis.close();
-					} catch (IOException ioex) {
-						if (DEBUG >= 3) System.err.println("  error closing data"); //OK
-					}
+						if (bis != null) bis.close();
+					} catch (IOException ioex) { }
 				}
 			}
 			req.setResponse(ret);
@@ -215,6 +228,31 @@ public class ZipClassLoader extends ClassLoader {
  
 	public ZipClassLoader(File zipFile) {
 		zipPath = zipFile;
+	}
+
+	// Input Stream mode
+	private Map<String, byte[]> zipMemoryEntries = null;
+
+	public ZipClassLoader(InputStream inputStream) throws IOException {
+		this.zipMemoryEntries = new HashMap<String, byte[]>();
+		loadZipFromStream(inputStream);
+	}
+
+	private void loadZipFromStream(InputStream inputStream) throws IOException {
+		ZipInputStream zis = new ZipInputStream(new BufferedInputStream(inputStream));
+		ZipEntry entry;
+		while ((entry = zis.getNextEntry()) != null) {
+			if (!entry.isDirectory()) {
+				ByteArrayOutputStream byteArray = new ByteArrayOutputStream();
+				byte[] buffer = new byte[4096];
+				int len;
+				while ((len = zis.read(buffer)) > 0) {
+					byteArray.write(buffer, 0, len);
+				}
+				zipMemoryEntries.put(entry.getName(), byteArray.toByteArray());
+			}
+		}
+		zis.close();
 	}
 	
 	@Override
@@ -273,7 +311,7 @@ public class ZipClassLoader extends ClassLoader {
 	private Object request(int action, String resourceName) {
 		Request request;
 		synchronized(bgLock) {
-			if (bgThread == null) { // start the thread if it isn't working
+			if (bgThread == null) {
 				bgThread = new WorkThread();
 				bgThread.start();
 			}

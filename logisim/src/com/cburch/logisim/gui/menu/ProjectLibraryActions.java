@@ -23,6 +23,9 @@ import com.cburch.logisim.tools.Library;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.jar.JarInputStream;
+
+import com.wasm.helpers.ByteArrayConverter;
 
 public class ProjectLibraryActions {
 	private ProjectLibraryActions() { }
@@ -96,17 +99,8 @@ public class ProjectLibraryActions {
 	}
 
 	public static void doLoadLocalLogisimLibrary(Project proj, Object[] f, String filename) {
-		// Convert Object[] to byte[]
-		byte[] byteArray = new byte[f.length];
-		for (int i = 0; i < f.length; i++) {
-			if (f[i] instanceof Byte) {
-				byteArray[i] = (Byte) f[i]; // Cast and store byte value
-			} else {
-				throw new IllegalArgumentException("Invalid array element type, expected Byte");
-			}
-		}
+		ByteArrayInputStream data = ByteArrayConverter.convertObjectToByteArray(f);
 		Loader loader = proj.getLogisimFile().getLoader();
-		ByteArrayInputStream data = new ByteArrayInputStream(byteArray);
 
 		Library lib = loader.loadLocalLogisimLibrary(data, filename);
 			if (lib != null) {
@@ -114,8 +108,40 @@ public class ProjectLibraryActions {
 			}
 	}
 	
-	public static void doLoadJarLibrary(Project proj) {
+	public static void doLoadJarLibrary(Project proj, Object[] f) {
 		Loader loader = proj.getLogisimFile().getLoader();
+		ByteArrayInputStream data = ByteArrayConverter.convertObjectToByteArray(f);
+		String className = "";
+		// get the manifest
+		try {
+			JarInputStream jarStream = new JarInputStream(data);
+			Manifest manifest = jarStream.getManifest();
+			className = manifest.getMainAttributes().getValue("Library-Class");
+		} catch (Exception e) {
+			if (className == null) {
+			className = JOptionPane.showInputDialog(proj.getFrame(),
+			Strings.get("jarClassNamePrompt"),
+			Strings.get("jarClassNameTitle"),
+			JOptionPane.QUESTION_MESSAGE);
+			// if user canceled selection, abort
+			if (className == null) return;
+		}
+		}
+		// If no manifest 
+		if (className == null) {
+			className = JOptionPane.showInputDialog(proj.getFrame(),
+			Strings.get("jarClassNamePrompt"),
+			Strings.get("jarClassNameTitle"),
+			JOptionPane.QUESTION_MESSAGE);
+			// if user canceled selection, abort
+			if (className == null) return;
+		}
+
+		Library lib = loader.loadJarLibrary(data, className);
+		if (lib != null) {
+			proj.doAction(LogisimFileActions.loadLibrary(lib));
+		}
+		/*
 		JFileChooser chooser = loader.createChooser();
 		chooser.setDialogTitle(Strings.get("loadJarDialogTitle"));
 		chooser.setFileFilter(Loader.JAR_FILTER);
@@ -149,13 +175,17 @@ public class ProjectLibraryActions {
 				// if user canceled selection, abort
 				if (className == null) return;
 			}
+			
 
 			Library lib = loader.loadJarLibrary(f, className);
 			if (lib != null) {
 				proj.doAction(LogisimFileActions.loadLibrary(lib));
 			}
 		}
-	}
+		*/
+	} 
+
+	public static native void openJarLibrary(Project proj);
 	
 	public static void doUnloadLibraries(Project proj) {
 		LogisimFile file = proj.getLogisimFile();

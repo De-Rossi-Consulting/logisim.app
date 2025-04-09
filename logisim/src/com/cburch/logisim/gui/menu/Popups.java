@@ -60,7 +60,7 @@ public class Popups {
 			} else if (src == loadLogisim) {
 				ProjectLibraryActions.doLoadLogisimLibrary(proj);
 			} else if (src == loadJar) {
-				ProjectLibraryActions.doLoadJarLibrary(proj);
+				ProjectLibraryActions.openJarLibrary(proj);
 			}
 		}
 	}

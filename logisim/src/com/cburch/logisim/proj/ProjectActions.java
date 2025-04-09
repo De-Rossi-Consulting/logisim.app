@@ -38,6 +38,8 @@ import java.io.InputStream;
 import java.util.UUID;
 import java.awt.Component;
 
+import com.wasm.helpers.ByteArrayConverter;
+
 public class ProjectActions {
 	private ProjectActions() { }
 	
@@ -260,18 +262,9 @@ public class ProjectActions {
 	public static Project doLocalOpen(Component parent, Project baseProject, Object[] f, String filename) {
 		// TODO implement my own findProjectFor function 
 		Project proj = baseProject;
+		ByteArrayInputStream data = ByteArrayConverter.convertObjectToByteArray(f);
 		
-		// Convert Object[] to byte[]
-		byte[] byteArray = new byte[f.length];
-		for (int i = 0; i < f.length; i++) {
-			if (f[i] instanceof Byte) {
-				byteArray[i] = (Byte) f[i]; // Cast and store byte value
-			} else {
-				throw new IllegalArgumentException("Invalid array element type, expected Byte");
-			}
-		}
 		Loader loader = proj.getLogisimFile().getLoader();
-		ByteArrayInputStream data = new ByteArrayInputStream(byteArray);
 		if (baseProject != null && baseProject.isStartupScreen()) {
 			proj = baseProject;
 			proj.setStartupScreen(false);

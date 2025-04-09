@@ -205,6 +205,24 @@ class LibraryManager {
 		invMap.put(ret, jarDescriptor);
 		return ret;
 	}
+
+	public LoadedLibrary loadJarLibrary(Loader loader, InputStream toRead, String className) {
+		//JarDescriptor jarDescriptor = new JarDescriptor(toRead, className);
+		//LoadedLibrary ret = findKnown(jarDescriptor);
+		//if (ret != null) return ret;
+
+		try {
+			LoadedLibrary ret = new LoadedLibrary(loader.loadJarFile(toRead, className));
+			return ret;
+		} catch (LoadFailedException e) {
+			loader.showError(e.getMessage());
+			return null;
+		}
+		
+		//fileMap.put(jarDescriptor, new WeakReference<LoadedLibrary>(ret));
+		//invMap.put(ret, jarDescriptor);
+		//return ret;
+	}
 	
 	public void reload(Loader loader, LoadedLibrary lib) {
 		LibraryDescriptor descriptor = invMap.get(lib);

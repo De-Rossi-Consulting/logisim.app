@@ -31,7 +31,7 @@ class MenuProject extends Menu {
 					openFolder(proj);
 				}
 			} else if (src == loadJar) {
-				ProjectLibraryActions.doLoadJarLibrary(proj);
+				ProjectLibraryActions.openJarLibrary(proj);
 			} else if (src == unload) {
 				ProjectLibraryActions.doUnloadLibraries(proj);
 			} else if (src == options) {

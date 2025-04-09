@@ -58,7 +58,7 @@ async function Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData(lib, data,
                 saveFileHandler(handler, fileHandlerId);
             }
 
-            logisimFile.setSavedLocally(true);
+            await logisimFile.setSavedLocally(true);
 
             console.log("File saved successfully!");
         } catch (error) {
@@ -191,5 +191,51 @@ async function Java_com_cburch_logisim_gui_menu_MenuProject_openFolder(lib, proj
     }
     catch(e) {
         console.log("Error openning file: ", e);
+    }
+}
+
+// open Jar file
+
+async function Java_com_cburch_logisim_gui_menu_ProjectLibraryActions_openJarLibrary(lib, proj) {
+    try {
+        const [handler] = await window.showOpenFilePicker({
+            suggestedName: "",
+            types: [{
+                descrption: "Java Jar files",
+                accept: {"application/octet-stream" : [".jar"]}
+            }]
+        });
+        
+        if (!handler) {
+            console.log("No file selected.");
+            return;
+        }
+        
+        console.log("Openning file");
+        const file = await handler.getFile();
+        const filename = await file.name;
+        const arrayBuffer = await file.arrayBuffer();
+        const uint8Array = new Uint8Array(arrayBuffer);
+        
+        // convert to Java type
+        console.log("Preparing file for sending to Java");
+        //const lib = await cheerpjRunLibrary("/app/logisim.jar");
+        const Byte = await lib.java.lang.Byte;
+        const ArrayList = await lib.java.util.ArrayList;
+        
+        console.log("Building byte array");
+        const array = await new ArrayList();
+        for (let i = 0; i < uint8Array.length; i++) {
+            const b = await new Byte(uint8Array[i]);
+            await array.add(b);
+        }
+        console.log("Converting array");
+        const javaByteArray = await array.toArray();
+        console.log("Data prepared... calling logisim method");
+        const ProjectLibraryActions = await lib.com.cburch.logisim.gui.menu.ProjectLibraryActions;
+        const pa = await ProjectLibraryActions.doLoadJarLibrary(proj, javaByteArray);
+    }
+    catch(e) {
+        console.log("Error during file openning: ", e);
     }
 }
