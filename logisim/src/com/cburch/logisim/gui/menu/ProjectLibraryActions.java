@@ -111,21 +111,14 @@ public class ProjectLibraryActions {
 	public static void doLoadJarLibrary(Project proj, Object[] f) {
 		Loader loader = proj.getLogisimFile().getLoader();
 		ByteArrayInputStream data = ByteArrayConverter.convertObjectToByteArray(f);
-		String className = "";
+		String className = null;
 		// get the manifest
 		try {
 			JarInputStream jarStream = new JarInputStream(data);
 			Manifest manifest = jarStream.getManifest();
 			className = manifest.getMainAttributes().getValue("Library-Class");
-		} catch (Exception e) {
-			if (className == null) {
-			className = JOptionPane.showInputDialog(proj.getFrame(),
-			Strings.get("jarClassNamePrompt"),
-			Strings.get("jarClassNameTitle"),
-			JOptionPane.QUESTION_MESSAGE);
-			// if user canceled selection, abort
-			if (className == null) return;
-		}
+		} catch (Exception e) {	
+			className = null;
 		}
 		// If no manifest 
 		if (className == null) {

@@ -99,6 +99,60 @@ class LibraryManager {
 			return file.hashCode() * 31 + className.hashCode();
 		}
 	}
+
+	// class for descriping local libraries 
+	private static class LocalDescriptor extends LibraryDescriptor {
+		private String fileHandlerId;
+		private InputStream input;
+		private boolean isJar;
+		private String name;
+		
+		LocalDescriptor(String fileHandlerId, InputStream input, boolean isJar, String name) {
+			this.fileHandlerId = fileHandlerId;
+			this.input = input;
+			this.isJar = isJar;
+			this.name = name;
+		}
+		
+		@Override
+		boolean concernsFile(File query) {
+			return false; // can't know with this
+		}
+
+		boolean concernsLocalFile(String id) {
+			return this.fileHandlerId == id;
+		}
+
+		boolean concernsLocalFile(InputStream input) {
+			return this.input == input;
+		}
+
+		@Override
+		String toDescriptor(Loader loader) {
+			return "local#" + this.fileHandlerId;
+		}
+		
+		@Override
+		void setBase(Loader loader, LoadedLibrary lib) throws LoadFailedException {
+			if (this.isJar) {
+				lib.setBase(loader.loadJarFile(input, name));
+			} else {
+				lib.setBase(loader.loadLogisimFile(input, name));
+			}
+		}
+		
+		@Override
+		public boolean equals(Object other) {
+			if (!(other instanceof LocalDescriptor)) return false;
+			LocalDescriptor o = (LocalDescriptor) other;
+			return this.fileHandlerId.equals(o.fileHandlerId);
+		}
+		
+		@Override
+		public int hashCode() {
+			return fileHandlerId.hashCode();
+		}
+	}
 	
 	private HashMap<LibraryDescriptor,WeakReference<LoadedLibrary>> fileMap;
 	private WeakHashMap<LoadedLibrary,LibraryDescriptor> invMap;

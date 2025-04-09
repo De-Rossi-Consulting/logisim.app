@@ -260,7 +260,7 @@ public class ProjectActions {
 
 	// open a byte stream
 	public static Project doLocalOpen(Component parent, Project baseProject, Object[] f, String filename) {
-		// TODO implement my own findProjectFor function 
+		// TODO(E) implement my own findProjectFor function 
 		Project proj = baseProject;
 		ByteArrayInputStream data = ByteArrayConverter.convertObjectToByteArray(f);
 		
