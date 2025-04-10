@@ -262,6 +262,8 @@ public class ProjectActions {
 	// open a byte stream
 	public static Project doLocalOpen(Component parent, Project baseProject, Object[] f, String filename) { 
 		Project proj = baseProject;
+		Frame frame = null;
+		Loader loader = null;
 
 		// dealing with null - occurs when examples are called
 		if (proj == null) {
@@ -270,13 +272,19 @@ public class ProjectActions {
 				System.out.println("No projects open!");
 			}
 			else {
-				proj = projects.get(0);
+				Project temp = projects.get(0);
+				parent = temp.getFrame();
+				loader = temp.getLogisimFile().getLoader();
 			}
+		}
+		else 
+		{
+			loader = proj.getLogisimFile().getLoader();
+			frame = proj.getFrame();
 		}
 
 		ByteArrayInputStream data = ByteArrayConverter.convertObjectToByteArray(f);
-		
-		Loader loader = proj.getLogisimFile().getLoader();
+	
 		if (baseProject != null && baseProject.isStartupScreen()) {
 			proj = baseProject;
 			proj.setStartupScreen(false);
@@ -311,7 +319,6 @@ public class ProjectActions {
 			return null;
 		}
 		
-		Frame frame = proj.getFrame();
 		if (frame == null) {
 			frame = createFrame(baseProject, proj);
 		}

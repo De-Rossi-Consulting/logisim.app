@@ -40,13 +40,8 @@
         </a>
       </div>
 
-      <div class="flex flex-row items-center gap-2">
-        <img
-          src="/src/images/logisim.ico"
-          alt="Logisim logo"
-          class="h-6 opacity-75"
-        />
-        <h1 class="text-zinc-700">Logisim</h1>
+      <div>
+        <h1 class="text-zinc-700 font-medium">Logisim Online</h1>
       </div>
 
       <!-- Navigation links -->
@@ -289,6 +284,36 @@
         >
           <h2 class="font-semibold text-base">Examples</h2>
           <p>Here are some examples to try out right away.</p>
+          <button
+            class="flex items-center gap-2 w-full px-4 py-2 text-left text-sm text-zinc-700
+            hover:bg-zinc-200 hover:text-zinc-700 font-semibold rounded-lg
+            cursor-pointer"
+            role="menuitem"
+            tabindex="-1"
+            onclick="loadExample('src/examples/Adder Example.circ', 'Adder Example')"
+          >
+            <img
+              src="/src/images/logisim.ico"
+              alt="Logisim logo"
+              class="h-6 opacity-75"
+            />
+            Adder
+          </button>
+          <button
+            class="flex items-center gap-2 w-full px-4 py-2 text-left text-sm text-zinc-700
+            hover:bg-zinc-200 hover:text-zinc-700 font-semibold rounded-lg
+            cursor-pointer"
+            role="menuitem"
+            tabindex="-1"
+            onclick="loadExample('src/examples/Multiplexer and Demultiplexer Example.circ', 'Multiplexer and Demultiplexer Example')"
+          >
+            <img
+              src="/src/images/logisim.ico"
+              alt="Logisim logo"
+              class="h-6 opacity-75"
+            />
+            Multiplexer Demultiplexer 
+          </button>
           <button
             class="flex items-center gap-2 w-full px-4 py-2 text-left text-sm text-zinc-700
             hover:bg-zinc-200 hover:text-zinc-700 font-semibold rounded-lg
