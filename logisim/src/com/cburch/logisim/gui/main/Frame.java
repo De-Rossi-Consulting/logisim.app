@@ -253,15 +253,13 @@ public class Frame extends LFrame implements LocaleListener {
 		Point prefPoint = getInitialLocation();
 
 		if (prefPoint != null) {
+			this.setLocation(prefPoint);
+		} else {
 			// Moving the screen to the middle if its set to the top corner
 			Dimension dim = getToolkit().getScreenSize();
-			if (prefPoint.x == 0) {		
-				prefPoint.x = (int) (dim.getWidth() - AppPreferences.WINDOW_WIDTH.get().intValue()) / 2;
-			}
-			if (prefPoint.y == 0) {
-				prefPoint.y = (int) (dim.getHeight() - AppPreferences.WINDOW_HEIGHT.get().intValue()) / 2;
-			}
-			this.setLocation(prefPoint);
+			int x = (int) (dim.getWidth() - AppPreferences.WINDOW_WIDTH.get().intValue()) / 2;
+			int y = (int) (dim.getHeight() - AppPreferences.WINDOW_HEIGHT.get().intValue()) / 2;
+			this.setLocation(x,y);
 		}
 		this.setExtendedState(AppPreferences.WINDOW_STATE.get().intValue());
 		

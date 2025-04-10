@@ -1,7 +1,4 @@
-// Functions used by wasm to interact with local files
-
-// Basic file functions
-// used for reading/writing one file
+// Functions used by wasm to interact with local filesS
 
 // Export Image
 async function Java_com_cburch_logisim_gui_main_ExportImage_DownloadFile(lib, filename, filedata) {

@@ -7,6 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/idb@8/build/umd.js"></script>
     <script>window.idb = idb;</script>
     <script type="text/javascript" src="src/javascript/fileFunctions.js"></script>
+    <script type="text/javascript" src="src/javascript/exampleFunctions.js"></script>
     <link rel="stylesheet" href="src/style.css">
   </head>
   <body>
@@ -18,6 +19,24 @@
             class="h-10 invert" />
         </a>
       </div>
+      
+      <div class="relative inline-block text-left">
+        <div>
+          <button type="button" class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-zinc-700" id="example-button" aria-expanded="false" aria-haspopup="true" onclick="toggleDropdown()">
+            Examples
+            <svg class="-mr-1 size-5 text-zinc-700" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+              <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+            </svg>
+          </button>
+        </div>
+        <div class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white ring-1 shadow-lg ring-black/5 focus:outline-hidden" id="example-menu" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+          <div class="py-1" role="none">
+              <button class="block w-full px-4 py-2 text-left text-sm text-zinc-700" role="menuitem" tabindex="-1" onclick="loadExample('src/examples/32 Bit ALU Example.circ', '32 Bit ALU Example')">32-bit ALU</button>
+          </div>
+        </div>
+      </div>
+
+
       <div>
         <h1 class="text-zinc-700 font-medium">Logisim Online</h1>
       </div>
@@ -47,10 +66,12 @@
               Java_com_cburch_logisim_gui_menu_MenuFile_openFolder,
               Java_com_cburch_logisim_gui_menu_MenuProject_openFolder,
               Java_com_cburch_logisim_gui_menu_ProjectLibraryActions_openJarLibrary,
+              Java_com_cburch_logisim_gui_start_Startup_setJava,
             },
           });
           cheerpjCreateDisplay(-1, -1, document.getElementById("cheerp-container"));
-          await cheerpjRunJar("/app/logisim.jar");
+          while (true) // restarts the app if its fully closed
+            await cheerpjRunJar("/app/logisim.jar");
         })();
       </script>
     </div>

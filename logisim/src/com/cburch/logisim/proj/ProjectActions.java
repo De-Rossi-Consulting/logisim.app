@@ -37,6 +37,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.UUID;
 import java.awt.Component;
+import java.util.List;
 
 import com.wasm.helpers.ByteArrayConverter;
 
@@ -259,9 +260,20 @@ public class ProjectActions {
 	}
 
 	// open a byte stream
-	public static Project doLocalOpen(Component parent, Project baseProject, Object[] f, String filename) {
-		// TODO(E) implement my own findProjectFor function 
+	public static Project doLocalOpen(Component parent, Project baseProject, Object[] f, String filename) { 
 		Project proj = baseProject;
+
+		// dealing with null - occurs when examples are called
+		if (proj == null) {
+			List<Project> projects = Projects.getOpenProjects();
+			if (projects.isEmpty()) {
+				System.out.println("No projects open!");
+			}
+			else {
+				proj = projects.get(0);
+			}
+		}
+
 		ByteArrayInputStream data = ByteArrayConverter.convertObjectToByteArray(f);
 		
 		Loader loader = proj.getLogisimFile().getLoader();

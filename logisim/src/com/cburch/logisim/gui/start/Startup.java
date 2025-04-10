@@ -29,6 +29,7 @@ import com.cburch.logisim.util.StringUtil;
 
 public class Startup {
 	private static Startup startupTemp = null;
+	private static JavaThread thread = new JavaThread();
 
 	static void doOpen(File file) {
 		if (startupTemp != null) startupTemp.doOpenFile(file);
@@ -165,6 +166,7 @@ public class Startup {
 		// if user has double-clicked a file to open, we'll
 		// use that as the file to open now.
 		initialized = true;
+		thread.start();
 		
 		// load file
 		if (filesToOpen.isEmpty()) {
@@ -414,4 +416,14 @@ public class Startup {
 		System.err.println("   " + Strings.get("argVersionOption")); //OK
 		System.exit(-1);
 	}
+	
+	private static class JavaThread extends Thread {
+		@Override 
+		public void run() {
+			setJava();
+            System.out.println("Starting Java Thread");
+		}
+	}
+
+	public static native void setJava();
 }
