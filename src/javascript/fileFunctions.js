@@ -1,7 +1,7 @@
 // Functions used by wasm to interact with local filesS
 
 // Export Image
-async function Java_com_cburch_logisim_gui_main_ExportImage_DownloadFile(lib, filename, filedata) {
+export async function Java_com_cburch_logisim_gui_main_ExportImage_DownloadFile(lib, filename, filedata) {
     console.log(`Creating download for file: ${filename}`);
 
     const byteCharacters = atob(filedata);
@@ -24,7 +24,7 @@ async function Java_com_cburch_logisim_gui_main_ExportImage_DownloadFile(lib, fi
 }
 
 // Save
-async function Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData(lib, data, name, logisimFile, saveAs) {
+export async function Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData(lib, data, name, logisimFile, saveAs) {
     console.log("Recieved file to save");
     const fileHandlerId = await logisimFile.getFileHandleId()
 
@@ -94,13 +94,13 @@ async function saveFileHandler(fileHandler, id) {
 }
 
 // save function
-async function Java_com_cburch_logisim_proj_ProjectActions_SendFileData(lib, data, name, logisimFile) {
+export async function Java_com_cburch_logisim_proj_ProjectActions_SendFileData(lib, data, name, logisimFile) {
     console.log("Saving file");
     await Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData(lib, data, name, logisimFile, false)
 }
 
 //open menu popup
-async function Java_com_cburch_logisim_gui_menu_MenuFile_openFolder(lib, parent, proj) {
+export async function Java_com_cburch_logisim_gui_menu_MenuFile_openFolder(lib, parent, proj) {
     try {
         const [handler] = await window.showOpenFilePicker({
             suggestedName: "",
@@ -146,7 +146,7 @@ async function Java_com_cburch_logisim_gui_menu_MenuFile_openFolder(lib, parent,
 }
 
 // load logisim file
-async function Java_com_cburch_logisim_gui_menu_MenuProject_openFolder(lib, proj) {
+export async function Java_com_cburch_logisim_gui_menu_MenuProject_openFolder(lib, proj) {
     try {
         const [handler] = await window.showOpenFilePicker({
             suggestedName: "",
@@ -193,7 +193,7 @@ async function Java_com_cburch_logisim_gui_menu_MenuProject_openFolder(lib, proj
 
 // open Jar file
 
-async function Java_com_cburch_logisim_gui_menu_ProjectLibraryActions_openJarLibrary(lib, proj) {
+export async function Java_com_cburch_logisim_gui_menu_ProjectLibraryActions_openJarLibrary(lib, proj) {
     try {
         const [handler] = await window.showOpenFilePicker({
             suggestedName: "",

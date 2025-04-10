@@ -5,16 +5,9 @@
     <title>Logisim Online: Use classic Logisim directly in your browser.</title>
     <script src="https://cjrtnc.leaningtech.com/3.1/cj3loader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/idb@8/build/umd.js"></script>
-    <script>
-      window.idb = idb;
-    </script>
     <script
-      type="text/javascript"
-      src="src/javascript/fileFunctions.js"
-    ></script>
-    <script
-      type="text/javascript"
-      src="src/javascript/exampleFunctions.js"
+      type="module"
+      src="src/javascript/main.js"
     ></script>
     <link rel="stylesheet" href="src/style.css" />
       <meta name="description" value="Run the classic Logisim directly in your
@@ -107,30 +100,6 @@
       id="cheerp-container"
       class="absolute top-10 right-0 left-0 bottom-[26px] shadow-none overflow-hidden border-t border-b border-zinc-200 bg-white bg-zinc-200"
     >
-      <script>
-        (async function () {
-          await cheerpjInit({
-            version: 8,
-            natives: {
-              Java_com_cburch_logisim_gui_main_ExportImage_DownloadFile,
-              Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData,
-              Java_com_cburch_logisim_proj_ProjectActions_SendFileData,
-              Java_com_cburch_logisim_gui_menu_MenuFile_openFolder,
-              Java_com_cburch_logisim_gui_menu_MenuProject_openFolder,
-              Java_com_cburch_logisim_gui_menu_ProjectLibraryActions_openJarLibrary,
-              Java_com_cburch_logisim_gui_start_Startup_setJava,
-            },
-          });
-          cheerpjCreateDisplay(
-            -1,
-            -1,
-            document.getElementById("cheerp-container"),
-          );
-          while (true)
-            // restarts the app if its fully closed
-            await cheerpjRunJar("/app/logisim.jar");
-        })();
-      </script>
     </div>
 
     <!-- Porting link -->

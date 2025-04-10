@@ -1,13 +1,13 @@
 // Functions used to load examples
 
-async function Java_com_cburch_logisim_gui_start_Startup_setJava(lib) {
+export async function Java_com_cburch_logisim_gui_start_Startup_setJava(lib) {
     window.JavaInstance = await lib;
     window.ProjectActions = await lib.com.cburch.logisim.proj.ProjectActions;
     console.log("Java instance set on JavaScript side");
     return new Promise(() => {}); // allows continued access
 }
 
-async function loadExample(examplePath, exampleName) {
+export async function loadExample(examplePath, exampleName) {
     if (!window.JavaInstance) {
         window.alert("Please wait for Logisim to launch");
         return;
@@ -59,7 +59,6 @@ async function loadExample(examplePath, exampleName) {
         console.log("Data prepared... calling logisim method");
 
         const pa = await window.ProjectActions.doLocalOpen(null, null, javaByteArray, filename);
-        toggleDropdown()
     } catch (e) {
         console.error("Error occured loading example: ", e);
     }
