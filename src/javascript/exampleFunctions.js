@@ -19,6 +19,7 @@ async function toggleDropdown() {
 async function loadExample(examplePath, exampleName) {
     if (!window.JavaInstance) {
         window.alert("Please wait for Logisim to launch");
+        toggleDropdown();
         return;
     }
 
@@ -64,6 +65,7 @@ async function loadExample(examplePath, exampleName) {
         console.log("Data prepared... calling logisim method");
 
         const pa = await window.ProjectActions.doLocalOpen(null, null, javaByteArray, filename);
+        toggleDropdown()
     } catch (e) {
         console.error("Error occured loading example: ", e);
     }
