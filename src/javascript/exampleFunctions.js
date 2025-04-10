@@ -7,21 +7,15 @@ async function Java_com_cburch_logisim_gui_start_Startup_setJava(lib) {
     return new Promise(() => {}); // allows continued access
 }
 
-async function toggleDropdown() {
-    const menu = document.getElementById('example-menu');
-    const expanded = document.getElementById('example-button');
-
-    menu.classList.toggle('hidden');
-    expanded.setAttribute('aria-expanded', menu.classList.contains('hidden') ? 'false' : 'true');
-
-}
-
 async function loadExample(examplePath, exampleName) {
     if (!window.JavaInstance) {
         window.alert("Please wait for Logisim to launch");
-        toggleDropdown();
         return;
     }
+
+    document.querySelectorAll("details").forEach((details) => {
+      details.open = false
+    })
 
     try{
         const response = await fetch(examplePath);
