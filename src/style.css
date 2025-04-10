@@ -14,10 +14,24 @@
 
 div#cheerpjDisplay.status:before {
     content: "" !important;
-    transform: translate(-50%, 0);
+    border: 0 !important;
+    transform: translate(-50%, 0) !important;
 }
 
 div#cheerpjDisplay.status:after {
     content: "" !important;
-    transform: translate(-50%, 0);
-  }
+    border: 0 !important;
+    transform: translate(-100%, 0) !important;
+}
+
+.cheerpjNC:before {
+    content: "" !important;
+    border: 0 !important;
+    transform: translate(-100%, 0) !important;
+}
+
+.cheerpjNC:after {
+    content: "" !important;
+    border: 0 !important;
+    transform: translate(-100%, 0) !important;
+}
