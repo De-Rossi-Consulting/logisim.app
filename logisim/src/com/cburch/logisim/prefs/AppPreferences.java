@@ -139,7 +139,7 @@ public class AppPreferences {
 	public static final PrefMonitor<Integer> WINDOW_STATE
 		= create(new PrefMonitorInt("windowState", JFrame.NORMAL));
 	public static final PrefMonitor<Integer> WINDOW_WIDTH
-		= create(new PrefMonitorInt("windowWidth", 800));
+		= create(new PrefMonitorInt("windowWidth", 1000));
 	public static final PrefMonitor<Integer> WINDOW_HEIGHT
 		= create(new PrefMonitorInt("windowHeight", 800));
 	public static final PrefMonitor<String> WINDOW_LOCATION
