@@ -13,9 +13,7 @@ export async function loadExample(examplePath, exampleName) {
         return;
     }
 
-    document.querySelectorAll("details").forEach((details) => {
-      details.open = false
-    })
+    disableButton(exampleName);
 
     try{
         const response = await fetch(examplePath);
@@ -62,4 +60,31 @@ export async function loadExample(examplePath, exampleName) {
     } catch (e) {
         console.error("Error occured loading example: ", e);
     }
+    enableButton(exampleName);
+    document.querySelectorAll("details").forEach((details) => {
+        details.open = false
+    })
+}
+
+function disableButton(name) {
+    const idBase = name.replace(/\s+/g, '-');
+    const button = document.getElementById(`${idBase}-Button`);
+    const img = document.getElementById(`${idBase}-Img`);
+    const spinner = document.getElementById(`${idBase}-Spinner`);
+
+    // Disable button and toggle visibility
+    button.setAttribute('disabled', 'true');
+    if (img) img.setAttribute('hidden', 'true');
+    if (spinner) spinner.removeAttribute('hidden');
+}
+
+function enableButton(name) {
+    const idBase = name.replace(/\s+/g, '-');
+    const button = document.getElementById(`${idBase}-Button`);
+    const img = document.getElementById(`${idBase}-Img`);
+    const spinner = document.getElementById(`${idBase}-Spinner`);
+
+    button.removeAttribute('disabled');
+    if (img) img.removeAttribute('hidden');
+    if (spinner) spinner.setAttribute('hidden', 'true');
 }
