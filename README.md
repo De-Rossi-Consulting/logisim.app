@@ -26,9 +26,9 @@ The main bulk of the project comes a the compiled `.jar` file of the minimally m
 
 To run this project, you'll need:
 
-- 🐍 [Python 3+](https://www.python.org/downloads/)
-- ☕ Java 8 (We recommend [OpenJDK 8](https://openjdk.org/projects/jdk8/))
-- [Nodejs](https://nodejs.org/en/download/)
+- <img src="./misc/github-images/python.ico" style="width:15px; position: relative; top: 3px;"/> [Python 3+](https://www.python.org/downloads/)
+- <img src="./misc/github-images/nanoduke.ico" style="width:15px; position: relative; top: 3px;"/>  Java 8 (We recommend [OpenJDK 8](https://openjdk.org/projects/jdk8/))
+- <img src="./misc/github-images/node.png" style="width:15px; position: relative; top: 3px;"/> [Nodejs](https://nodejs.org/en/download/)
 
 > [!NOTE]
 > Logisim can be compiled with an earlier version of Java however we use Java 8 as its the closest version CheerpJ supports
