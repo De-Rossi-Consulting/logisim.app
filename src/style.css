@@ -32,6 +32,8 @@ div#cheerpjDisplay.status:before {
     border: 0 !important;
     opacity: 1 !important;
     transform: translate(-100%, 0) !important;
+    box-shadow: none !important;
+    outline: none !important;
 }
 
 div#cheerpjDisplay.status:after {
@@ -39,6 +41,8 @@ div#cheerpjDisplay.status:after {
     border: 0 !important;
     opacity: 1 !important;
     transform: translate(-100%, 0) !important;
+    box-shadow: none !important;
+    outline: none !important;
 }
 
 .cheerpjNC:before {
@@ -46,6 +50,8 @@ div#cheerpjDisplay.status:after {
     border: 0 !important;
     opacity: 1 !important;
     transform: translate(-100%, 0) !important;
+    box-shadow: none !important;
+    outline: none !important;
 }
 
 .cheerpjNC:after {
@@ -53,4 +59,13 @@ div#cheerpjDisplay.status:after {
     border: 0 !important;
     opacity: 1 !important;
     transform: translate(-100%, 0) !important;
+    box-shadow: none !important;
+    outline: none !important;
 }
+
+.cheerpjLoading {
+    pointer-events: none !important;
+    background: url(/images/cheerpj.svg) no-repeat center !important;
+    background-size: 300px !important;
+    background-color: white !important;
+  }
