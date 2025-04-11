@@ -67,3 +67,6 @@ python3 ~/PATH TO LOGISIM REPO/logisim-legacy-wasm/logisim/scripts/create-jar.py
 (Make sure to replace `PATH TO LOGISIM REPO` with the absolute path to the repositry directory)
 
 This will automatically build the `.jar` file and plac eit in the right directory. If you **reload the Logisim Online Page** you should see your changes!
+
+## <img src="./misc/github-images/github.ico" style="width:20px; position: relative; top: 2px;"/> Contributing
+Pull requests and issue reports are welcome!
