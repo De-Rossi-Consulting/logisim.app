@@ -25,3 +25,6 @@ dist-ssr
 
 # python
 **/__pycache__/
+
+# temp build files
+/public/files/

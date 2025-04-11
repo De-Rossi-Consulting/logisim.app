@@ -248,19 +248,15 @@ public class Frame extends LFrame implements LocaleListener {
 
 		computeTitle();
 
-		this.setSize(AppPreferences.WINDOW_WIDTH.get().intValue(),
-				AppPreferences.WINDOW_HEIGHT.get().intValue());
-		Point prefPoint = getInitialLocation();
+		Dimension dim = getToolkit().getScreenSize();
+		int width = (int) Math.min(AppPreferences.WINDOW_WIDTH.get().intValue(), dim.getWidth());
+		int height = (int) Math.min(AppPreferences.WINDOW_HEIGHT.get().intValue(), dim.getHeight());
+		this.setSize(width,height);
 
-		if (prefPoint != null) {
-			this.setLocation(prefPoint);
-		} else {
-			// Moving the screen to the middle if its set to the top corner
-			Dimension dim = getToolkit().getScreenSize();
-			int x = (int) (dim.getWidth() - AppPreferences.WINDOW_WIDTH.get().intValue()) / 2;
-			int y = (int) (dim.getHeight() - AppPreferences.WINDOW_HEIGHT.get().intValue()) / 2;
-			this.setLocation(x,y);
-		}
+		// Moving the screen to the middle if its set to the top corner
+		int x = (int) (dim.getWidth() - width) / 2;
+		int y = (int) (dim.getHeight() - height) / 2;
+		this.setLocation(x,y);
 		this.setExtendedState(AppPreferences.WINDOW_STATE.get().intValue());
 		
 		menuListener.register(mainPanel);
