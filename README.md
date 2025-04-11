@@ -1,8 +1,8 @@
-# <img src="./public/favicon.ico" style="width:50px; position: relative; top: 15px;"/> Logisim.app
+# <img src="./public/favicon.ico" style="width:50px; position: relative; top: 15px;"/> Logisim Online
 
 [Logisim](https://www.cburch.com/logisim/) is a globally-used educational tool for desiging and simulating digital logic circuits. Originally written in Java, we used [CheerpJ](https://cheerpj.com/) to compile it into [WebAssembly](https://webassembly.org/) and added a few modifications to allow the use of files directly from local storage. 
 
-This allows Logisim.app to be used in all modern browsers and devices (including mobile!) without the need for installation or a Java runtime environment. 
+This allows Logisim Online to be used in all modern browsers and devices (including mobile!) without the need for installation or a Java runtime environment. 
 
 👉 Try it out [here](https://logisim.app/)!
 
@@ -13,13 +13,13 @@ This allows Logisim.app to be used in all modern browsers and devices (including
 
 ---
 
-![Screenshot of Logisim.app]()
+![Screenshot of Logisim Online]()
 
 This project was made by [DRS Software](https://drs.software/)
 
 ---
 
-## <img src="./misc/github-images/wasm.ico" style="width:20px; position: relative; top: 2px;"/> How to compile Logisim.app
+## <img src="./misc/github-images/wasm.ico" style="width:20px; position: relative; top: 2px;"/> How to compile Logisim Online
 The main bulk of the project comes a the compiled `.jar` file of the minimally modified original [Logisim source code](https://sourceforge.net/projects/circuit/). This `.jar` is then executed directly in the browser using [CheerpJ](https://cheerpj.com/), wrapped with a lightweight HTML/CSS/JS frontend for interaction and file handling.
 
 ### 🔧 Dependencies
@@ -55,9 +55,7 @@ If all is working, you should see something like the following:
   ➜  Network: use --host to expose
   ➜  press h + enter to show help
 ```
-Open the link after `Local:` to run Logisim.app!
-
-Any changes made to the HTML/CSS/JS files should auto refresh the page and  be visible instantly. However if you want to edit the java files you will need to **compile logisim**.
+If you want to edit the java files you will need to **build the `.jar` file**.
 
 ### 📦 Building the `.jar`
 To build the `.jar` file we can use the `create-jar.py` file included in the original source code. 
@@ -68,14 +66,4 @@ python3 ~/PATH TO LOGISIM REPO/logisim-legacy-wasm/logisim/scripts/create-jar.py
 ```
 (Make sure to replace `PATH TO LOGISIM REPO` with the absolute path to the repositry directory)
 
-This will automatically build the `.jar` file and plac eit in the right directory. If you **reload the Logisim.app Page** you should see your changes!
-
-> [!NOTE]
-> If you're on Linux, to make the build command easier you can add the command under an allias to your `.bashrc` file:
-> ```sh
->echo 'alias build-logisim="python3 ~/PATH-TO-LOGISIM-REPO/logisim-legacy-wasm/logisim/scripts/create-jar.py -d ~/PATH-TO-LOGISIM-REPO/logisim-legacy-wasm/public"' >> ~/.bashrc
->source ~/.bashrc
-> ```
->(**Make sure to edit the command to what you used for the step above!**)
->
-> Once you have done this you can simply use `build-logisim` as a command in command line to build he `.jar`!
+This will automatically build the `.jar` file and plac eit in the right directory. If you **reload the Logisim Online Page** you should see your changes!
