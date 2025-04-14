@@ -309,6 +309,24 @@ class LibraryManager {
 		}
 		return null;
 	}
+
+	public Library findReference(InputStream file, File query) {
+		for (Library lib : file.getLibraries()) {
+			LibraryDescriptor desc = invMap.get(lib);
+			if (desc != null && desc.concernsLocalFile(query)) {
+				return lib;
+			}
+			if (lib instanceof LoadedLibrary) {
+				LoadedLibrary loadedLib = (LoadedLibrary) lib;
+				if (loadedLib.getBase() instanceof LogisimFile) {
+					LogisimFile loadedProj = (LogisimFile) loadedLib.getBase();
+					Library ret = findReference(loadedProj, query);
+					if (ret != null) return lib;
+				}
+			}
+		}
+		return null;
+	}
 	
 	public void fileSaved(Loader loader, File dest, File oldFile, LogisimFile file) {
 		LoadedLibrary old = findKnown(oldFile);
