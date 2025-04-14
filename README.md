@@ -1,4 +1,4 @@
-# <img src="./public/favicon.ico" style="width:50px; position: relative; top: 15px;"/> Logisim Online
+# <img src="./.github/logisim.ico" style="width:50px;" align="center"/> Logisim Online
 
 [Logisim](https://www.cburch.com/logisim/) is a globally-used educational tool for desiging and simulating digital logic circuits. Originally written in Java, we used [CheerpJ](https://cheerpj.com/) to compile it into [WebAssembly](https://webassembly.org/) and added a few modifications to allow the use of files directly from local storage. 
 
@@ -19,16 +19,16 @@ This project was made by [DRS Software](https://drs.software/)
 
 ---
 
-## <img src="./misc/github-images/wasm.ico" style="width:20px; position: relative; top: 2px;"/> How to compile Logisim Online
+## <img src="./.github/wasm.ico" style="width:20px;" /> How to compile Logisim Online
 The main bulk of the project comes a the compiled `.jar` file of the minimally modified original [Logisim source code](https://sourceforge.net/projects/circuit/). This `.jar` is then executed directly in the browser using [CheerpJ](https://cheerpj.com/), wrapped with a lightweight HTML/CSS/JS frontend for interaction and file handling.
 
 ### 🔧 Dependencies
 
 To run this project, you'll need:
 
-- <img src="./misc/github-images/python.ico" style="width:15px; position: relative; top: 3px;"/> [Python 3+](https://www.python.org/downloads/)
-- <img src="./misc/github-images/nanoduke.ico" style="width:15px; position: relative; top: 3px;"/>  Java 8 (We recommend [OpenJDK 8](https://openjdk.org/projects/jdk8/))
-- <img src="./misc/github-images/node.png" style="width:15px; position: relative; top: 3px;"/> [Nodejs](https://nodejs.org/en/download/)
+- <img src="./.github/python.ico" style="width:15px;" align="center"/> [Python 3+](https://www.python.org/downloads/)
+- <img src="./.github/nanoduke.ico" style="width:15px;" align="center"/>  Java 8 (We recommend [OpenJDK 8](https://openjdk.org/projects/jdk8/))
+- <img src="./.github/node.png" style="width:15px;" align="center"/> [Nodejs](https://nodejs.org/en/download/)
 
 > [!NOTE]
 > Logisim can be compiled with an earlier version of Java however we use Java 8 as its the closest version CheerpJ supports
@@ -68,5 +68,5 @@ python3 ~/PATH TO LOGISIM REPO/logisim-legacy-wasm/logisim/scripts/create-jar.py
 
 This will automatically build the `.jar` file and plac eit in the right directory. If you **reload the Logisim Online Page** you should see your changes!
 
-## <img src="./misc/github-images/github.ico" style="width:20px; position: relative; top: 2px;"/> Contributing
+## <img src="./.github/github.ico" style="width:20px;" /> Contributing
 Pull requests and issue reports are welcome!
