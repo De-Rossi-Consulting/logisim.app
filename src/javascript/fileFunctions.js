@@ -121,6 +121,10 @@ export async function Java_com_cburch_logisim_gui_menu_MenuFile_openFolder(lib, 
         const arrayBuffer = await file.arrayBuffer();
         const uint8Array = new Uint8Array(arrayBuffer);
 
+        //file handler id
+        const savedID = await extractFileHandlerIDFromFile(file);
+        console.log(savedID);
+
         // convert to Java type
         console.log("Preparing file for sending to Java");
         //const lib = await cheerpjRunLibrary("/app/logisim.jar");
@@ -230,9 +234,24 @@ export async function Java_com_cburch_logisim_gui_menu_ProjectLibraryActions_ope
         const javaByteArray = await array.toArray();
         console.log("Data prepared... calling logisim method");
         const ProjectLibraryActions = await lib.com.cburch.logisim.gui.menu.ProjectLibraryActions;
-        const pa = await ProjectLibraryActions.doLoadJarLibrary(proj, javaByteArray);
+        const pa = await ProjectLibraryActions.doLoadJarLibrary(proj, javaByteArray, filename);
     }
     catch(e) {
         console.log("Error during file openning: ", e);
     }
 }
+
+async function extractFileHandlerIDFromFile(file) {
+    const xmlText = await file.text();
+  
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(xmlText, "application/xml");
+  
+    const projectElement = xmlDoc.querySelector("project");
+    if (!projectElement) {
+        console.warn("No <project> element found in XML.");
+        return null;
+    }
+
+    return projectElement.getAttribute("FileHandleId") || null;
+  }
