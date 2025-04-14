@@ -1,40 +1,59 @@
-# <img src="./.github/logisim.ico" style="width:50px;" align="center"/> Logisim Online
+# Logisim.app - Classic logisim ported to the browser
 
-[Logisim](https://www.cburch.com/logisim/) is a globally-used educational tool for desiging and simulating digital logic circuits. Originally written in Java, we used [CheerpJ](https://cheerpj.com/) to compile it into [WebAssembly](https://webassembly.org/) and added a few modifications to allow the use of files directly from local storage. 
+<p style="text-align:center">
+<picture style="height:50px;">
+  <source media="(prefers-color-scheme: dark)" srcset="./public/images/logisim.app.dark.svg">
+  <img alt="Logisim.app" src="./public/images/logisim.app.svg">
+</picture>
+<p>
 
-This allows Logisim Online to be used in all modern browsers and devices (including mobile!) without the need for installation or a Java runtime environment. 
+<p style="text-align:center">
+  [👉 Try it here](https://logisim.app/) · [📖 Read the announcement](https://drs.software/blog/announcing-logisim)
+</p>
 
-👉 Try it out [here](https://logisim.app/)!
+[Logisim.app](https://logisim.app) is a fully featured browser-based port of classic [Logisim](https://www.cburch.com/logisim/): a widely used educational tool for designing  and simulating digital logic circuits.
 
-> [!IMPORTANT]
-> Want to find out more?
-> - See our [announcement](https://drs.software/blog/announcing-logisim)  
-> - See our [technical breakdown](#)
+![Screenshot of Logisim.app](./Screenshot.png)
 
----
+This project is a complete 1:1 port of the original Java application (based on version 2.7.2) running in the browser powered by [WebAssembly](https://webassembly.org/). It uses [CheerpJ](https://cheerpj.com/) (a complete browser runtime for Java apps) to execute the compiled JAR file directly in the browser. It also includes a lightweight JavaScript layer to provide browser-compatible file operations.
 
-![Screenshot of Logisim Online]()
+This allows Logisim.app to be used in any modern browsers and devices (including mobile!) without the need for installation or a Java runtime environment.
 
-This project was made by [DRS Software](https://drs.software/)
+## Documentation
 
----
+Since this project doesn't change any of Logisim's core features, you can refer the documentation built into the application and the [original logisim documentation](https://www.cburch.com/logisim/docs.html) for usage details.
 
-## <img src="./.github/wasm.ico" style="width:20px;" /> How to compile Logisim Online
-The main bulk of the project comes a the compiled `.jar` file of the minimally modified original [Logisim source code](https://sourceforge.net/projects/circuit/). This `.jar` is then executed directly in the browser using [CheerpJ](https://cheerpj.com/), wrapped with a lightweight HTML/CSS/JS frontend for interaction and file handling.
+### Working with Files
+Logisim.app allows you to work with files from your local computer, or from a virtual filesystem in the browser (implemented on top of IndexedDB).
 
-### 🔧 Dependencies
+Whenever you try to open or save a file, you will see the following prompt:
 
-To run this project, you'll need:
+![File open dialog](./.github/open-file.png)
 
-- <img src="./.github/python.ico" style="width:15px;" align="center"/> [Python 3+](https://www.python.org/downloads/)
-- <img src="./.github/nanoduke.ico" style="width:15px;" align="center"/>  Java 8 (We recommend [OpenJDK 8](https://openjdk.org/projects/jdk8/))
-- <img src="./.github/node.png" style="width:15px;" align="center"/> [Nodejs](https://nodejs.org/en/download/)
+- **Local desktop** refers to your computer's file system.
+- **Browser memory** refers to the virtual file system in the browser.
 
-> [!NOTE]
-> Logisim can be compiled with an earlier version of Java however we use Java 8 as its the closest version CheerpJ supports
+Once a file has been opened, the application functions equivalently in both cases.
 
-### ⬇️ Run the Repo
-To run the repo locally clone it and use npm to run a dev local server:
+[!NOTE]: All files stored in the virtual filesystem in the browser are cleared if you delete site data for logisim.app.
+
+## Building and Running Logisim.app
+
+This project contains:
+- A copy of the original [Logisim source code](https://sourceforge.net/projects/circuit/), minimally modified to sypport file handling in the browser.
+- A lightweight HTML/CSS/JS frontend.
+
+### Dependencies
+
+To build and run it, you'll need:
+
+- [Python 3+](https://www.python.org/downloads/)
+- Java 8+ (Any recent version of [OpenJDK ](https://openjdk.org/install/) should work)
+- [NodeJs](https://nodejs.org/en/download/)
+
+
+### Running the application locally
+To run the repo locally, clone this repository and use npm to run a local dev server:
 
 ```sh
 git clone https://github.com/De-Rossi-Consulting/logisim-legacy-wasm.git
@@ -43,7 +62,8 @@ npm install
 npm run dev
 ```
 
-If all is working, you should see something like the following:
+If everything is working, you should see something like the following:
+
 ```
 > logisim-legacy-wasm@0.0.0 dev
 > vite
@@ -55,18 +75,33 @@ If all is working, you should see something like the following:
   ➜  Network: use --host to expose
   ➜  press h + enter to show help
 ```
-If you want to edit the java files you will need to **build the `.jar` file**.
 
-### 📦 Building the `.jar`
-To build the `.jar` file we can use the `create-jar.py` file included in the original source code. 
+If you want to modify the java files, you will need to **build the `.jar` file**.
 
-To run the script you can do the following:
+### Building the `.jar` file
+
+To build the `.jar` file, run the `create-jar.py` script included in the original source code:
+
 ```sh
-python3 ~/PATH TO LOGISIM REPO/logisim-legacy-wasm/logisim/scripts/create-jar.py -d ~/PATH TO LOGISIM REPO/logisim-legacy-wasm/public
+python3 /PATH_TO_REPO/logisim-legacy-wasm/logisim/scripts/create-jar.py -d /PATH_TO_REPO/logisim-legacy-wasm/public
 ```
-(Make sure to replace `PATH TO LOGISIM REPO` with the absolute path to the repositry directory)
 
-This will automatically build the `.jar` file and plac eit in the right directory. If you **reload the Logisim Online Page** you should see your changes!
+[!NOTE]: Make sure to replace `PATH_TO_REPO` with the absolute path to the repositry directory
 
-## <img src="./.github/github.ico" style="width:20px;" /> Contributing
-Pull requests and issue reports are welcome!
+This will build the `.jar` file and place it in `/public`, and you can reload the application to see your changes.
+
+## Contributing
+
+Pull requests and issue reports are welcome!Please use [GitHub Issues](https://github.com/De-Rossi-Consulting/logisim-legacy-wasm/issues/new/choose) to report any bugs or problems you encounter.
+
+## Licence
+
+Logisim.app is licensed under the GPLv2, see [LICENSE](./LICENSE) for details.
+
+## Contact
+
+This project is maintained by [DRS Software](https://drs.software/).
+
+Website: [https://drs.software](https://drs.software)
+
+Contact: [info@logisim.app](mailto:info@logisim.app)
