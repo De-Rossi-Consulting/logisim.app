@@ -1,4 +1,4 @@
-export default async function onRequest(context) {
+export async function onRequest(context) {
   const request = context.request;
   let response = await caches.default.match(request);
   if (!response) {
