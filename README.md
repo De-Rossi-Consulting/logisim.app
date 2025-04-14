@@ -1,11 +1,10 @@
-# Logisim.app - Classic logisim ported to the browser
-
 <p align="center">
 <picture >
   <source media="(prefers-color-scheme: dark)" srcset="./public/images/logisim.app.dark.svg" style="height:100px;">
   <img alt="Logisim.app" src="./public/images/logisim.app.svg" style="height:100px;">
 </picture>
 <p>
+<h3 align="center">Classic logisim ported to the browser, powered by WebAssembly</h3>
 
 <p align="center">
   👉 <a href="https://logisim.app">Try it here</a> · 📖 <a href="https://drs.software/blog/announcing-logisim">Read the announcement</a>
