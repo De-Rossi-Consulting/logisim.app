@@ -97,7 +97,7 @@ This will build the `.jar` file and place it in `/public`, and you can reload th
 
 ## Contributing
 
-Pull requests and issue reports are welcome!Please use [GitHub Issues](https://github.com/De-Rossi-Consulting/logisim-legacy-wasm/issues/new/choose) to report any bugs or problems you encounter.
+Pull requests and issue reports are welcome! Please use [GitHub Issues](https://github.com/De-Rossi-Consulting/logisim-legacy-wasm/issues/new/choose) to report any bugs or problems you encounter.
 
 ## Licence
 
