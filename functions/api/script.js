@@ -5,7 +5,7 @@ export async function onRequest(context) {
     response = await fetch(
       "https://plausible.drs.software/js/script.js",
     );
-    ctx.waitUntil(caches.default.put(request, response.clone()));
+    await caches.default.put(request, response.clone());
   }
   return response;
 }
