@@ -1,15 +1,17 @@
 # Logisim.app - Classic logisim ported to the browser
 
-<p style="text-align:center">
-<picture style="height:50px;">
-  <source media="(prefers-color-scheme: dark)" srcset="./public/images/logisim.app.dark.svg">
-  <img alt="Logisim.app" src="./public/images/logisim.app.svg">
+<p align="center">
+<picture >
+  <source media="(prefers-color-scheme: dark)" srcset="./public/images/logisim.app.dark.svg" style="height:100px;">
+  <img alt="Logisim.app" src="./public/images/logisim.app.svg" style="height:100px;">
 </picture>
 <p>
 
-<p style="text-align:center">
-  [👉 Try it here](https://logisim.app/) · [📖 Read the announcement](https://drs.software/blog/announcing-logisim)
+<p align="center">
+  <a href="https://logisim.app">👉 Try it here</a> · <a href="https://drs.software/blog/announcing-logisim">📖 Read the announcement</a>
 </p>
+
+<br/>
 
 [Logisim.app](https://logisim.app) is a fully featured browser-based port of classic [Logisim](https://www.cburch.com/logisim/): a widely used educational tool for designing  and simulating digital logic circuits.
 
@@ -19,7 +21,7 @@ This project is a complete 1:1 port of the original Java application (based on v
 
 This allows Logisim.app to be used in any modern browsers and devices (including mobile!) without the need for installation or a Java runtime environment.
 
-## Documentation
+## Using Logisim.app
 
 Since this project doesn't change any of Logisim's core features, you can refer the documentation built into the application and the [original logisim documentation](https://www.cburch.com/logisim/docs.html) for usage details.
 
@@ -35,7 +37,8 @@ Whenever you try to open or save a file, you will see the following prompt:
 
 Once a file has been opened, the application functions equivalently in both cases.
 
-[!NOTE]: All files stored in the virtual filesystem in the browser are cleared if you delete site data for logisim.app.
+> [!NOTE]
+> All files stored in the virtual filesystem in the browser are cleared if you delete site data for logisim.app.
 
 ## Building and Running Logisim.app
 
@@ -86,7 +89,8 @@ To build the `.jar` file, run the `create-jar.py` script included in the origina
 python3 /PATH_TO_REPO/logisim-legacy-wasm/logisim/scripts/create-jar.py -d /PATH_TO_REPO/logisim-legacy-wasm/public
 ```
 
-[!NOTE]: Make sure to replace `PATH_TO_REPO` with the absolute path to the repositry directory
+> [!NOTE]
+> Make sure to replace `PATH_TO_REPO` with the absolute path to the repositry directory
 
 This will build the `.jar` file and place it in `/public`, and you can reload the application to see your changes.
 
@@ -96,7 +100,9 @@ Pull requests and issue reports are welcome!Please use [GitHub Issues](https://g
 
 ## Licence
 
-Logisim.app is licensed under the GPLv2, see [LICENSE](./LICENSE) for details.
+Logisim.app is licensed under the GPLv2, see [LICENSE](./LICENSE) for details. It is powered by CheerpJ, under the [community licence](https://cheerpj.com/docs/licensing).
+
+This project also contains source code from the original (Logisim)[https://sourceforge.net/projects/circuit/], included licensed under the [GPLv2](https://www.cburch.com/logisim/gpl.html). 
 
 ## Contact
 
