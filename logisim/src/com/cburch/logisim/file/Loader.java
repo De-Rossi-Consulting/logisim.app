@@ -184,9 +184,9 @@ public class Loader implements LibraryLoader {
 		return ret;
 	}
 	
-	public Library loadJarLibrary(InputStream file, String className) {
+	public Library loadJarLibrary(InputStream file, String className, String fileHandlerID) {
 		//File actual = getSubstitution(file);
-		return LibraryManager.instance.loadJarLibrary(this, file, className);
+		return LibraryManager.instance.loadJarLibrary(this, file, className, fileHandlerID);
 	}
 	
 	public void reload(LoadedLibrary lib) {

@@ -207,12 +207,18 @@ class LibraryManager {
 			String className = name.substring(sepLoc + 1);
 			File toRead = loader.getFileFor(fileName, Loader.JAR_FILTER);
 			return loadJarLibrary(loader, toRead, className);
+		} else if (type.equals("local")){
+			// we know its a local file
+			// we have the handler id so we can ask native - if native doesn't know it can ask the user to pick a file
+			return findLocalLibrary(name);
 		} else {
 			loader.showError(StringUtil.format(Strings.get("fileTypeError"),
 				type, desc));
 			return null;
 		}
 	}
+
+	public static native LoadedLibrary findLocalLibrary(String id);
 	
 	public LoadedLibrary loadLogisimLibrary(Loader loader, File toRead) {
 		LoadedLibrary ret = findKnown(toRead);
@@ -260,13 +266,13 @@ class LibraryManager {
 		return ret;
 	}
 
-	public LoadedLibrary loadJarLibrary(Loader loader, InputStream toRead, String className) {
-		LocalDescriptor localDescriptor = new LocalDescriptor(toRead, className, true);
+	public LoadedLibrary loadJarLibrary(Loader loader, InputStream toRead, String className, String fileHandlerID) {
+		LocalDescriptor localDescriptor = new LocalDescriptor(fileHandlerID, toRead, true, className);
 		LoadedLibrary ret = findKnown(localDescriptor);
 		if (ret != null) return ret;
 
 		try {
-			LoadedLibrary ret = new LoadedLibrary(loader.loadJarFile(toRead, className));
+			ret = new LoadedLibrary(loader.loadJarFile(toRead, className));
 		} catch (LoadFailedException e) {
 			loader.showError(e.getMessage());
 			return null;
@@ -309,18 +315,13 @@ class LibraryManager {
 		return null;
 	}
 
-	public Library findReference(InputStream file, File query) {
+	public Library findLocalReference(LogisimFile file, String query) {
 		for (Library lib : file.getLibraries()) {
 			LibraryDescriptor desc = invMap.get(lib);
-			if (desc != null && desc.concernsLocalFile(query)) {
-				return lib;
-			}
-			if (lib instanceof LoadedLibrary) {
-				LoadedLibrary loadedLib = (LoadedLibrary) lib;
-				if (loadedLib.getBase() instanceof LogisimFile) {
-					LogisimFile loadedProj = (LogisimFile) loadedLib.getBase();
-					Library ret = findReference(loadedProj, query);
-					if (ret != null) return lib;
+			if (desc != null && (desc instanceof LocalDescriptor)) {
+				LocalDescriptor locDesc = (LocalDescriptor) desc;
+				if (locDesc.concernsLocalFile(query)) {
+					return lib;
 				}
 			}
 		}
