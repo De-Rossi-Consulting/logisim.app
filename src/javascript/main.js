@@ -3,7 +3,8 @@ import {Java_com_cburch_logisim_gui_main_ExportImage_DownloadFile,
         Java_com_cburch_logisim_proj_ProjectActions_SendFileData,
         Java_com_cburch_logisim_gui_menu_MenuFile_openFolder,
         Java_com_cburch_logisim_gui_menu_MenuProject_openFolder,
-        Java_com_cburch_logisim_gui_menu_ProjectLibraryActions_openJarLibrary} from "./fileFunctions.js";
+        Java_com_cburch_logisim_gui_menu_ProjectLibraryActions_openJarLibrary,
+        Java_com_cburch_logisim_file_LibraryManager_findLocalLibrary} from "./fileFunctions.js";
 
 import {Java_com_cburch_logisim_gui_start_Startup_setJava, loadExample} from "./exampleFunctions.js";
 import "./closeAlert.js";
@@ -22,6 +23,7 @@ window.loadExample = loadExample;
             Java_com_cburch_logisim_gui_menu_MenuProject_openFolder,
             Java_com_cburch_logisim_gui_menu_ProjectLibraryActions_openJarLibrary,
             Java_com_cburch_logisim_gui_start_Startup_setJava,
+            Java_com_cburch_logisim_file_LibraryManager_findLocalLibrary,
         },
     });
     cheerpjCreateDisplay(

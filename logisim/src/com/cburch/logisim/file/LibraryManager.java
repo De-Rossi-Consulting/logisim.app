@@ -127,9 +127,17 @@ class LibraryManager {
 			return this.input == input;
 		}
 
+		String getFileHandlerID() {
+			return this.fileHandlerId;
+		}
+
+		String getName() {
+			return this.name;
+		}
+
 		@Override
 		String toDescriptor(Loader loader) {
-			return "local#" + this.fileHandlerId;
+			return "local#" + this.fileHandlerId + "#" + this.name;
 		}
 		
 		@Override
@@ -207,12 +215,23 @@ class LibraryManager {
 			String className = name.substring(sepLoc + 1);
 			File toRead = loader.getFileFor(fileName, Loader.JAR_FILTER);
 			return loadJarLibrary(loader, toRead, className);
+		} else if (type.equals("local")){
+			// we know its a local file
+			// we have the handler id so we can ask native - if native doesn't know it can ask the user to pick a file
+			Library lib = findLocalLibrary(name, loader);
+			if (lib == null) {
+				loader.showError(Strings.get("fileLoadCanceledError"));
+				return null;
+			}
+			return lib;
 		} else {
 			loader.showError(StringUtil.format(Strings.get("fileTypeError"),
 				type, desc));
 			return null;
 		}
 	}
+
+	public static native LoadedLibrary findLocalLibrary(String id, Loader loader);
 	
 	public LoadedLibrary loadLogisimLibrary(Loader loader, File toRead) {
 		LoadedLibrary ret = findKnown(toRead);
@@ -231,15 +250,18 @@ class LibraryManager {
 		return ret;
 	}
 
-	// Same as above but without any levels of caching due to its reliance on the file type
-	public LoadedLibrary loadLogisimLibrary(Loader loader, InputStream input, String filename) {
-		LoadedLibrary ret = null;
+	public LoadedLibrary loadLogisimLibrary(Loader loader, InputStream input, String filename, String fileHandlerID) {
+		LocalDescriptor localDescriptor = new LocalDescriptor(fileHandlerID, input, false, filename);
+		LoadedLibrary ret = findKnown(localDescriptor);
+		if (ret != null) return ret;
 		try {
 			ret = new LoadedLibrary(loader.loadLogisimFile(input, filename));
 		} catch (LoadFailedException e) {
 			loader.showError(e.getMessage());
 			return null;
 		}
+		fileMap.put(localDescriptor, new WeakReference<LoadedLibrary>(ret));
+		invMap.put(ret, localDescriptor);
 		return ret;
 	}
 	
@@ -260,22 +282,21 @@ class LibraryManager {
 		return ret;
 	}
 
-	public LoadedLibrary loadJarLibrary(Loader loader, InputStream toRead, String className) {
-		//JarDescriptor jarDescriptor = new JarDescriptor(toRead, className);
-		//LoadedLibrary ret = findKnown(jarDescriptor);
-		//if (ret != null) return ret;
+	public LoadedLibrary loadJarLibrary(Loader loader, InputStream toRead, String className, String fileHandlerID) {
+		LocalDescriptor localDescriptor = new LocalDescriptor(fileHandlerID, toRead, true, className);
+		LoadedLibrary ret = findKnown(localDescriptor);
+		if (ret != null) return ret;
 
 		try {
-			LoadedLibrary ret = new LoadedLibrary(loader.loadJarFile(toRead, className));
-			return ret;
+			ret = new LoadedLibrary(loader.loadJarFile(toRead, className));
 		} catch (LoadFailedException e) {
 			loader.showError(e.getMessage());
 			return null;
 		}
 		
-		//fileMap.put(jarDescriptor, new WeakReference<LoadedLibrary>(ret));
-		//invMap.put(ret, jarDescriptor);
-		//return ret;
+		fileMap.put(localDescriptor, new WeakReference<LoadedLibrary>(ret));
+		invMap.put(ret, localDescriptor);
+		return ret;
 	}
 	
 	public void reload(Loader loader, LoadedLibrary lib) {

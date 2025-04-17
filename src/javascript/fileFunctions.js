@@ -58,12 +58,20 @@ export async function Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData(lib
             await logisimFile.setSavedLocally(true);
 
             console.log("File saved successfully!");
+            await logisimFile.setName(handler.name.replace(/\.circ$/, ''));
         } catch (error) {
             console.error("Failed to save file: ", error)
         }
     } else { // Save
         const db = await window.idb.openDB("fileHandlersDB", 1,);
-        handler = await db.get("handlers", fileHandlerId)
+        const handler = await db.get("handlers", fileHandlerId)
+
+        // don't have the file id so need to save as
+        // this happens as we don't have permissions from the FileSystemAPI to SAVE a file we OPEN
+        if (!handler) {
+            await Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData(lib, data, name, logisimFile, true);
+            return;
+        }
 
         const permissions = await handler.queryPermission({ mode: "readwrite" });
 
@@ -73,6 +81,7 @@ export async function Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData(lib
             await writableStream.close();
 
             console.log("File saved successfully!");
+            await logisimFile.setName(handler.name.replace(/\.circ$/, ''));
         }
         else {
             console.error("Save failed: Permission denied.")
@@ -99,7 +108,7 @@ export async function Java_com_cburch_logisim_proj_ProjectActions_SendFileData(l
     await Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData(lib, data, name, logisimFile, false)
 }
 
-//open menu popup
+//open logisim file
 export async function Java_com_cburch_logisim_gui_menu_MenuFile_openFolder(lib, parent, proj) {
     try {
         const [handler] = await window.showOpenFilePicker({
@@ -139,13 +148,13 @@ export async function Java_com_cburch_logisim_gui_menu_MenuFile_openFolder(lib, 
         console.log("Data prepared... calling logisim method");
 
         const ProjectActions = await lib.com.cburch.logisim.proj.ProjectActions;
-        const pa = await ProjectActions.doLocalOpen(parent, proj, javaByteArray, filename);
+        const project = await ProjectActions.doLocalOpen(parent, proj, javaByteArray, filename);
     } catch(e) {
         console.log("Error openning file: ", e);
     }
 }
 
-// load logisim file
+// load logisim lib
 export async function Java_com_cburch_logisim_gui_menu_MenuProject_openFolder(lib, proj) {
     try {
         const [handler] = await window.showOpenFilePicker({
@@ -167,6 +176,10 @@ export async function Java_com_cburch_logisim_gui_menu_MenuProject_openFolder(li
         const arrayBuffer = await file.arrayBuffer();
         const uint8Array = new Uint8Array(arrayBuffer);
 
+        let savedID = await extractFileHandlerIDFromFile(file);
+        if (!savedID)
+            savedID = crypto.randomUUID();
+
         // convert to Java type
         console.log("Preparing file for sending to Java");
         //const lib = await cheerpjRunLibrary("/app/logisim.jar");
@@ -184,7 +197,7 @@ export async function Java_com_cburch_logisim_gui_menu_MenuProject_openFolder(li
 
         console.log("Data prepared... calling logisim method");
         const ProjectLibraryActions = await lib.com.cburch.logisim.gui.menu.ProjectLibraryActions;
-        const pa = await ProjectLibraryActions.doLoadLocalLogisimLibrary(proj, javaByteArray, filename);
+        const pa = await ProjectLibraryActions.doLoadLocalLogisimLibrary(proj, javaByteArray, filename, savedID);
     }
     catch(e) {
         console.log("Error openning file: ", e);
@@ -210,9 +223,13 @@ export async function Java_com_cburch_logisim_gui_menu_ProjectLibraryActions_ope
 
         console.log("Openning file");
         const file = await handler.getFile();
-        const filename = await file.name;
         const arrayBuffer = await file.arrayBuffer();
         const uint8Array = new Uint8Array(arrayBuffer);
+
+        //file handler id
+        let savedID = await extractFileHandlerIDFromFile(file);
+        if (!savedID)
+            savedID = crypto.randomUUID();
 
         // convert to Java type
         console.log("Preparing file for sending to Java");
@@ -230,9 +247,117 @@ export async function Java_com_cburch_logisim_gui_menu_ProjectLibraryActions_ope
         const javaByteArray = await array.toArray();
         console.log("Data prepared... calling logisim method");
         const ProjectLibraryActions = await lib.com.cburch.logisim.gui.menu.ProjectLibraryActions;
-        const pa = await ProjectLibraryActions.doLoadJarLibrary(proj, javaByteArray);
+        const pa = await ProjectLibraryActions.doLoadJarLibrary(proj, javaByteArray, savedID);
     }
     catch(e) {
         console.log("Error during file openning: ", e);
     }
 }
+
+async function extractFileHandlerIDFromFile(file) {
+    const xmlText = await file.text();
+  
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(xmlText, "application/xml");
+  
+    const projectElement = xmlDoc.querySelector("project");
+    if (!projectElement) {
+        console.warn("No <project> element found in XML.");
+        return null;
+    }
+
+    return projectElement.getAttribute("FileHandleId") || null;
+  }
+
+  export async function Java_com_cburch_logisim_file_LibraryManager_findLocalLibrary(lib, id, loader) {
+      const [uuid, name] = id.split('#');
+    
+    //check the db
+    const db = await window.idb.openDB("fileHandlersDB", 1,);
+    const handler = await db.get("handlers", uuid)
+
+
+    let file;
+
+    if (handler) { // we know what file this is
+        file = await handler.getFile()
+    }
+    else { // we don't
+        //show warning so its not really confusing and people know what to do
+        const JOptionPane = await lib.javax.swing.JOptionPane;
+        const StringUtil = await lib.com.cburch.logisim.util.StringUtil;
+        const Strings = await lib.com.cburch.logisim.file.Strings;
+
+        await JOptionPane.showMessageDialog(null,
+            await StringUtil.format(await Strings.get("fileLibraryMissingError"),
+            name));
+
+        //ask user for file
+        const [handler] = await window.showOpenFilePicker({
+            suggestedName: "",
+            types: [{
+                descrption: "Logisim Circuit Files",
+                accept: {"application/octet-stream" : [".circ"]}
+            },{
+                descrption: "Java Jar files",
+                accept: {"application/octet-stream" : [".jar"]}
+            }]
+        });
+
+        if (!handler) {
+            console.log("No file selected.");
+            return null;
+        }
+
+        console.log("Openning file");
+        file = await handler.getFile();
+    }
+
+    // prep file
+    const arrayBuffer = await file.arrayBuffer();
+    const uint8Array = new Uint8Array(arrayBuffer);
+
+    //file handler id
+    let savedID = await extractFileHandlerIDFromFile(file);
+    if (!savedID)
+        savedID = crypto.randomUUID();
+
+    // convert to Java type
+    console.log("Preparing file for sending to Java");
+    //const lib = await cheerpjRunLibrary("/app/logisim.jar");
+    const Byte = await lib.java.lang.Byte;
+    const ArrayList = await lib.java.util.ArrayList;
+
+    console.log("Building byte array");
+    const array = await new ArrayList();
+    for (let i = 0; i < uint8Array.length; i++) {
+        const b = await new Byte(uint8Array[i]);
+        await array.add(b);
+    }
+    console.log("Converting array");
+    const javaByteArray = await array.toArray();
+    const ByteArrayConverter = await lib.com.wasm.helpers.ByteArrayConverter;
+    const data = await ByteArrayConverter.convertObjectToByteArray(javaByteArray);
+    console.log("Data prepared... calling logisim method");
+
+    // get type from name
+    if (file.name.endsWith(".jar")) {
+        const LibraryManager = await lib.com.cburch.logisim.file.LibraryManager;
+        const library = await LibraryManager.instance.loadJarLibrary(loader, data, name, uuid);
+        return library;
+    } else if (file.name.endsWith(".circ")) {
+        const LibraryManager = await lib.com.cburch.logisim.file.LibraryManager;
+        const library = await LibraryManager.instance.loadLogisimLibrary(loader, data, name, uuid);
+        return library;
+    } else {
+        const parts = file.name.split('.');
+        const type = parts.pop();
+        const JOptionPane = await lib.javax.swing.JOptionPane;
+        const StringUtil = await lib.com.cburch.logisim.util.StringUtil;
+        const Strings = await lib.com.cburch.logisim.file.Strings;
+        await JOptionPane.showMessageDialog(null, await StringUtil.format( await Strings.get("fileTypeError"),
+            type, file.name));
+        return null;
+    }
+
+  }
