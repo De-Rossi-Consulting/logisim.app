@@ -170,7 +170,7 @@ public class MenuFile extends Menu implements ActionListener {
 				catch (Exception ex) {
 					Loader loader = proj.getLogisimFile().getLoader();
 					System.out.println(ex.getMessage());
-					loader.showError("Error sending file data");
+					loader.showError("Error sending file data to save");
 				}
 			}
 		} else if (src == prefs) {

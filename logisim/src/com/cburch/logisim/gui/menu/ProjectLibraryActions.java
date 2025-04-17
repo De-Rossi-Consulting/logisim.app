@@ -98,11 +98,11 @@ public class ProjectLibraryActions {
 		}
 	}
 
-	public static void doLoadLocalLogisimLibrary(Project proj, Object[] f, String filename) {
+	public static void doLoadLocalLogisimLibrary(Project proj, Object[] f, String filename, String fileHandlerID) {
 		ByteArrayInputStream data = ByteArrayConverter.convertObjectToByteArray(f);
 		Loader loader = proj.getLogisimFile().getLoader();
 
-		Library lib = loader.loadLocalLogisimLibrary(data, filename);
+		Library lib = loader.loadLocalLogisimLibrary(data, filename, fileHandlerID);
 			if (lib != null) {
 				proj.doAction(LogisimFileActions.loadLibrary(lib));
 			}
