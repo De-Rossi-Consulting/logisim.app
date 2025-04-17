@@ -58,6 +58,7 @@ export async function Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData(lib
             await logisimFile.setSavedLocally(true);
 
             console.log("File saved successfully!");
+            await logisimFile.setName(handler.name.replace(/\.circ$/, ''));
         } catch (error) {
             console.error("Failed to save file: ", error)
         }
@@ -80,6 +81,7 @@ export async function Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData(lib
             await writableStream.close();
 
             console.log("File saved successfully!");
+            await logisimFile.setName(handler.name.replace(/\.circ$/, ''));
         }
         else {
             console.error("Save failed: Permission denied.")
@@ -106,7 +108,7 @@ export async function Java_com_cburch_logisim_proj_ProjectActions_SendFileData(l
     await Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData(lib, data, name, logisimFile, false)
 }
 
-//open menu popup
+//open logisim file
 export async function Java_com_cburch_logisim_gui_menu_MenuFile_openFolder(lib, parent, proj) {
     try {
         const [handler] = await window.showOpenFilePicker({
@@ -146,13 +148,13 @@ export async function Java_com_cburch_logisim_gui_menu_MenuFile_openFolder(lib, 
         console.log("Data prepared... calling logisim method");
 
         const ProjectActions = await lib.com.cburch.logisim.proj.ProjectActions;
-        const pa = await ProjectActions.doLocalOpen(parent, proj, javaByteArray, filename);
+        const project = await ProjectActions.doLocalOpen(parent, proj, javaByteArray, filename);
     } catch(e) {
         console.log("Error openning file: ", e);
     }
 }
 
-// load logisim file
+// load logisim lib
 export async function Java_com_cburch_logisim_gui_menu_MenuProject_openFolder(lib, proj) {
     try {
         const [handler] = await window.showOpenFilePicker({
