@@ -12,11 +12,11 @@
 
 <br/>
 
+## About
+
 [Logisim.app](https://logisim.app) is a fully featured browser-based port of classic [Logisim](https://www.cburch.com/logisim/): a widely used educational tool for designing  and simulating digital logic circuits.
 
 ![Screenshot of Logisim.app](./Screenshot.png)
-
-## About
 
 This project is a complete 1:1 port of the original Java application (based on version 2.7.2) running in the browser powered by [WebAssembly](https://webassembly.org/). It uses [CheerpJ](https://cheerpj.com/) (a complete browser runtime for Java apps) to execute the compiled JAR file directly in the browser. It also includes a lightweight JavaScript layer to provide browser-compatible file operations.
 
@@ -97,7 +97,7 @@ This will build the `.jar` file and place it in `/public`, and you can reload th
 
 ## Contributing
 
-Pull requests and issue reports are welcome!Please use [GitHub Issues](https://github.com/De-Rossi-Consulting/logisim-legacy-wasm/issues/new/choose) to report any bugs or problems you encounter.
+Pull requests and issue reports are welcome! Please use [GitHub Issues](https://github.com/De-Rossi-Consulting/logisim-legacy-wasm/issues/new/choose) to report any bugs or problems you encounter.
 
 ## Licence
 
