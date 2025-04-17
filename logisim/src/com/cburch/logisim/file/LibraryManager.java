@@ -123,10 +123,6 @@ class LibraryManager {
 			return this.fileHandlerId == id;
 		}
 
-		boolean concernsLocalFile(InputStream input) {
-			return this.input == input;
-		}
-
 		String getFileHandlerID() {
 			return this.fileHandlerId;
 		}
@@ -329,6 +325,30 @@ class LibraryManager {
 			}
 		}
 		return null;
+	}
+
+	public String[] findAllLocalReferences(LogisimFile file) {
+		ArrayList<String> matches = new ArrayList();
+		findAllLocalReferencesRecursive(file, matches);
+		String[] s = new String[0];
+		return matches.toArray(s);
+	}
+
+	private void findAllLocalReferencesRecursive(LogisimFile file, ArrayList matches) {
+		for (Library lib : file.getLibraries()) {
+			LibraryDescriptor desc = invMap.get(lib);
+			if (desc instanceof LocalDescriptor) {
+				LocalDescriptor localDesc = (LocalDescriptor) desc;
+				matches.add(localDesc.getFileHandlerID());
+			}
+			if (lib instanceof LoadedLibrary) {
+				LoadedLibrary loadedLib = (LoadedLibrary) lib;
+				if (loadedLib.getBase() instanceof LogisimFile) {
+					LogisimFile nestedFile = (LogisimFile) loadedLib.getBase();
+					findAllLocalReferencesRecursive(nestedFile, matches);
+				}
+			}
+		}
 	}
 	
 	public void fileSaved(Loader loader, File dest, File oldFile, LogisimFile file) {

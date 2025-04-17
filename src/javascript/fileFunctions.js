@@ -40,6 +40,10 @@ export async function Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData(lib
                 }]
             });
 
+            if (await hasCircularReferences(lib, logisimFile, handler)) {
+                return;
+            }
+
             const writableStream = await handler.createWritable();
             await writableStream.write(data);
             await writableStream.close();
@@ -70,6 +74,10 @@ export async function Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData(lib
         // this happens as we don't have permissions from the FileSystemAPI to SAVE a file we OPEN
         if (!handler) {
             await Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData(lib, data, name, logisimFile, true);
+            return;
+        }
+
+        if (await hasCircularReferences(lib, logisimFile, handler)) {
             return;
         }
 
@@ -269,13 +277,12 @@ async function extractFileHandlerIDFromFile(file) {
     return projectElement.getAttribute("FileHandleId") || null;
   }
 
-  export async function Java_com_cburch_logisim_file_LibraryManager_findLocalLibrary(lib, id, loader) {
-      const [uuid, name] = id.split('#');
+export async function Java_com_cburch_logisim_file_LibraryManager_findLocalLibrary(lib, id, loader) {
+    const [uuid, name] = id.split('#');
     
     //check the db
     const db = await window.idb.openDB("fileHandlersDB", 1,);
     const handler = await db.get("handlers", uuid)
-
 
     let file;
 
@@ -360,4 +367,25 @@ async function extractFileHandlerIDFromFile(file) {
         return null;
     }
 
-  }
+}
+
+async function hasCircularReferences(lib, file, handler) {
+    const LibraryManager = await lib.com.cburch.logisim.file.LibraryManager;
+    const javaIds = await LibraryManager.instance.findAllLocalReferences(file);
+
+    // for each id - get the handler and check if it referes to the same file as the one we want to save to
+    for (let i = 0; i < await javaIds.length; i++) {
+        const id = await javaIds[0];
+        const db = await window.idb.openDB("fileHandlersDB", 1,);
+        const savedHandler = await db.get("handlers", id)
+        if (savedHandler) {
+            if (savedHandler.isSameEntry(handler)) {
+                //warn people - TODO - change to logisim warning
+                console.log("circle found");
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
