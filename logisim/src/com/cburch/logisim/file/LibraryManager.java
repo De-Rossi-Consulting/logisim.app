@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.WeakHashMap;
+import java.util.Set;
+import java.util.LinkedHashSet;
 
 import com.cburch.logisim.tools.Library;
 import com.cburch.logisim.util.StringUtil;
@@ -328,13 +330,13 @@ class LibraryManager {
 	}
 
 	public String[] findAllLocalReferences(LogisimFile file) {
-		ArrayList<String> matches = new ArrayList();
+		Set<String> matches = new LinkedHashSet();
 		findAllLocalReferencesRecursive(file, matches);
 		String[] s = new String[0];
 		return matches.toArray(s);
 	}
 
-	private void findAllLocalReferencesRecursive(LogisimFile file, ArrayList matches) {
+	private void findAllLocalReferencesRecursive(LogisimFile file, Set<String> matches) {
 		for (Library lib : file.getLibraries()) {
 			LibraryDescriptor desc = invMap.get(lib);
 			if (desc instanceof LocalDescriptor) {
