@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.WeakHashMap;
+import java.util.Set;
+import java.util.LinkedHashSet;
 
 import com.cburch.logisim.tools.Library;
 import com.cburch.logisim.util.StringUtil;
@@ -121,10 +123,6 @@ class LibraryManager {
 
 		boolean concernsLocalFile(String id) {
 			return this.fileHandlerId == id;
-		}
-
-		boolean concernsLocalFile(InputStream input) {
-			return this.input == input;
 		}
 
 		String getFileHandlerID() {
@@ -329,6 +327,30 @@ class LibraryManager {
 			}
 		}
 		return null;
+	}
+
+	public String[] findAllLocalReferences(LogisimFile file) {
+		Set<String> matches = new LinkedHashSet();
+		findAllLocalReferencesRecursive(file, matches);
+		String[] s = new String[0];
+		return matches.toArray(s);
+	}
+
+	private void findAllLocalReferencesRecursive(LogisimFile file, Set<String> matches) {
+		for (Library lib : file.getLibraries()) {
+			LibraryDescriptor desc = invMap.get(lib);
+			if (desc instanceof LocalDescriptor) {
+				LocalDescriptor localDesc = (LocalDescriptor) desc;
+				matches.add(localDesc.getFileHandlerID());
+			}
+			if (lib instanceof LoadedLibrary) {
+				LoadedLibrary loadedLib = (LoadedLibrary) lib;
+				if (loadedLib.getBase() instanceof LogisimFile) {
+					LogisimFile nestedFile = (LogisimFile) loadedLib.getBase();
+					findAllLocalReferencesRecursive(nestedFile, matches);
+				}
+			}
+		}
 	}
 	
 	public void fileSaved(Loader loader, File dest, File oldFile, LogisimFile file) {

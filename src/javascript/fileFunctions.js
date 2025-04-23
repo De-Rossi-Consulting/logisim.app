@@ -40,6 +40,11 @@ export async function Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData(lib
                 }]
             });
 
+            const hasCirc = await hasCircularReferences(lib, logisimFile, handler)
+            if (hasCirc) {
+                return;
+            }
+
             const writableStream = await handler.createWritable();
             await writableStream.write(data);
             await writableStream.close();
@@ -63,13 +68,18 @@ export async function Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData(lib
             console.error("Failed to save file: ", error)
         }
     } else { // Save
-        const db = await window.idb.openDB("fileHandlersDB", 1,);
+        const db = await window.idb.openDB("fileHandlersDB", 2,);
         const handler = await db.get("handlers", fileHandlerId)
 
         // don't have the file id so need to save as
         // this happens as we don't have permissions from the FileSystemAPI to SAVE a file we OPEN
         if (!handler) {
             await Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData(lib, data, name, logisimFile, true);
+            return;
+        }
+
+        const hasCirc = await hasCircularReferences(lib, logisimFile, handler)
+        if (hasCirc) {
             return;
         }
 
@@ -91,7 +101,7 @@ export async function Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData(lib
 
 // internal function for saving the fileHandler to indexedDB
 async function saveFileHandler(fileHandler, id) {
-    const db = await window.idb.openDB("fileHandlersDB", 1, {
+    const db = await window.idb.openDB("fileHandlersDB", 2, {
         upgrade(db) {
             if (!db.objectStoreNames.contains("handlers")) {
                 db.createObjectStore("handlers")
@@ -100,6 +110,19 @@ async function saveFileHandler(fileHandler, id) {
     });
 
     await db.put("handlers", fileHandler, id);
+}
+
+// internal function for saving the fileHandler to indexedDB for libraries
+async function saveLibraryHandler(fileHandler, id) {
+    const db = await window.idb.openDB("fileHandlersDB", 2, {
+        upgrade(db) {
+            if (!db.objectStoreNames.contains("library")) {
+                db.createObjectStore("library")
+            }
+        },
+    });
+
+    await db.put("library", fileHandler, id);
 }
 
 // save function
@@ -179,6 +202,7 @@ export async function Java_com_cburch_logisim_gui_menu_MenuProject_openFolder(li
         let savedID = await extractFileHandlerIDFromFile(file);
         if (!savedID)
             savedID = crypto.randomUUID();
+        saveLibraryHandler(handler, savedID);
 
         // convert to Java type
         console.log("Preparing file for sending to Java");
@@ -230,6 +254,7 @@ export async function Java_com_cburch_logisim_gui_menu_ProjectLibraryActions_ope
         let savedID = await extractFileHandlerIDFromFile(file);
         if (!savedID)
             savedID = crypto.randomUUID();
+        saveLibraryHandler(handler, savedID);
 
         // convert to Java type
         console.log("Preparing file for sending to Java");
@@ -269,16 +294,16 @@ async function extractFileHandlerIDFromFile(file) {
     return projectElement.getAttribute("FileHandleId") || null;
   }
 
-  export async function Java_com_cburch_logisim_file_LibraryManager_findLocalLibrary(lib, id, loader) {
-      const [uuid, name] = id.split('#');
+export async function Java_com_cburch_logisim_file_LibraryManager_findLocalLibrary(lib, id, loader) {
+    const [uuid, name] = id.split('#');
     
     //check the db
-    const db = await window.idb.openDB("fileHandlersDB", 1,);
-    const handler = await db.get("handlers", uuid)
-
+    const db = await window.idb.openDB("fileHandlersDB", 2,);
+    const handler = await db.get("library", uuid)
 
     let file;
 
+    try {
     if (handler) { // we know what file this is
         file = await handler.getFile()
     }
@@ -322,6 +347,8 @@ async function extractFileHandlerIDFromFile(file) {
     if (!savedID)
         savedID = crypto.randomUUID();
 
+    saveLibraryHandler(handler, savedID);
+
     // convert to Java type
     console.log("Preparing file for sending to Java");
     //const lib = await cheerpjRunLibrary("/app/logisim.jar");
@@ -359,5 +386,38 @@ async function extractFileHandlerIDFromFile(file) {
             type, file.name));
         return null;
     }
+    }
+    catch {
+        console.error("Error finding library");
+        return null;
+    }
 
-  }
+}
+
+async function hasCircularReferences(lib, file, handler) {
+    const LibraryManager = await lib.com.cburch.logisim.file.LibraryManager;
+    const javaIds = await LibraryManager.instance.findAllLocalReferences(file);
+
+    // for each id - get the handler and check if it referes to the same file as the one we want to save to
+    for (let i = 0; i < await javaIds.length; i++) {
+        const id = await javaIds[i];
+        const db = await window.idb.openDB("fileHandlersDB", 2,);
+        const savedHandler = await db.get("library", id);
+        if (savedHandler) {
+            if (await savedHandler.isSameEntry(handler)) {
+                console.log("Handlers: ", savedHandler, handler)
+                const JOptionPane = await lib.javax.swing.JOptionPane;
+                const StringUtil = await lib.com.cburch.logisim.util.StringUtil;
+                const Strings = await lib.com.cburch.logisim.file.Strings;
+                const file = await savedHandler.getFile()
+                await JOptionPane.showMessageDialog(null,
+					await StringUtil.format(await Strings.get("fileCircularError"), file.name),
+					await Strings.get("fileSaveErrorTitle"),
+					await JOptionPane.ERROR_MESSAGE);
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
