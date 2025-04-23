@@ -36,3 +36,16 @@ window.loadExample = loadExample;
         await cheerpjRunJar("/app/logisim.jar");
 })();
 
+(async function () {
+    const db = await window.idb.openDB("fileHandlersDB", 2, {
+        upgrade(db) {
+            if (!db.objectStoreNames.contains("handlers")) {
+                db.createObjectStore("handlers");
+            }
+            if (!db.objectStoreNames.contains("library")) {
+                db.createObjectStore("library");
+            }
+        }
+    });
+})();
+
