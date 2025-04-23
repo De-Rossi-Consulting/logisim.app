@@ -40,7 +40,8 @@ export async function Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData(lib
                 }]
             });
 
-            if (await hasCircularReferences(lib, logisimFile, handler)) {
+            const hasCirc = await hasCircularReferences(lib, logisimFile, handler)
+            if (hasCirc) {
                 return;
             }
 
@@ -286,6 +287,7 @@ export async function Java_com_cburch_logisim_file_LibraryManager_findLocalLibra
 
     let file;
 
+    try {
     if (handler) { // we know what file this is
         file = await handler.getFile()
     }
@@ -366,6 +368,11 @@ export async function Java_com_cburch_logisim_file_LibraryManager_findLocalLibra
             type, file.name));
         return null;
     }
+    }
+    catch {
+        console.error("Error finding library");
+        return null;
+    }
 
 }
 
@@ -380,8 +387,13 @@ async function hasCircularReferences(lib, file, handler) {
         const savedHandler = await db.get("handlers", id)
         if (savedHandler) {
             if (savedHandler.isSameEntry(handler)) {
-                //warn people - TODO - change to logisim warning
-                console.log("circle found");
+                const JOptionPane = await lib.javax.swing.JOptionPane;
+                const StringUtil = await lib.com.cburch.logisim.util.StringUtil;
+                const Strings = await lib.com.cburch.logisim.file.Strings;
+                await JOptionPane.showMessageDialog(null,
+					await StringUtil.format(await Strings.get("fileCircularError"), await file.getName()),
+					await Strings.get("fileSaveErrorTitle"),
+					await JOptionPane.ERROR_MESSAGE);
                 return true;
             }
         }
