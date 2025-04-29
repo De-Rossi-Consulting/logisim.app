@@ -35,7 +35,7 @@ export async function Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData(lib
             const handle = await window.showSaveFilePicker({
                 suggestedName: name,
                 types: [{
-                    descrption: "Logisim Circuit Files",
+                    description: "Logisim Circuit Files",
                     accept: {"application/octet-stream" : [".circ"]}
                 }]
             });
@@ -137,7 +137,7 @@ export async function Java_com_cburch_logisim_gui_menu_MenuFile_openFolder(lib, 
         const [handle] = await window.showOpenFilePicker({
             suggestedName: "",
             types: [{
-                descrption: "Logisim Circuit Files",
+                description: "Logisim Circuit Files",
                 accept: {"application/octet-stream" : [".circ"]}
             }]
         });
@@ -183,7 +183,7 @@ export async function Java_com_cburch_logisim_gui_menu_MenuProject_openFolder(li
         const [handle] = await window.showOpenFilePicker({
             suggestedName: "",
             types: [{
-                descrption: "Logisim Circuit Files",
+                description: "Logisim Circuit Files",
                 accept: {"application/octet-stream" : [".circ"]}
             }]
         });
@@ -235,7 +235,7 @@ export async function Java_com_cburch_logisim_gui_menu_ProjectLibraryActions_ope
         const [handle] = await window.showOpenFilePicker({
             suggestedName: "",
             types: [{
-                descrption: "Java Jar files",
+                description: "Java Jar files",
                 accept: {"application/octet-stream" : [".jar"]}
             }]
         });
@@ -321,10 +321,10 @@ export async function Java_com_cburch_logisim_file_LibraryManager_findLocalLibra
         const [handle] = await window.showOpenFilePicker({
             suggestedName: "",
             types: [{
-                descrption: "Logisim Circuit Files",
+                description: "Logisim Circuit Files",
                 accept: {"application/octet-stream" : [".circ"]}
             },{
-                descrption: "Java Jar files",
+                description: "Java Jar files",
                 accept: {"application/octet-stream" : [".jar"]}
             }]
         });
