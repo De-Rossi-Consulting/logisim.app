@@ -104,13 +104,13 @@ class LibraryManager {
 
 	// class for descriping local libraries 
 	private static class LocalDescriptor extends LibraryDescriptor {
-		private String fileHandlerId;
+		private String filehandleId;
 		private InputStream input;
 		private boolean isJar;
 		private String name;
 		
-		LocalDescriptor(String fileHandlerId, InputStream input, boolean isJar, String name) {
-			this.fileHandlerId = fileHandlerId;
+		LocalDescriptor(String filehandleId, InputStream input, boolean isJar, String name) {
+			this.filehandleId = filehandleId;
 			this.input = input;
 			this.isJar = isJar;
 			this.name = name;
@@ -122,11 +122,11 @@ class LibraryManager {
 		}
 
 		boolean concernsLocalFile(String id) {
-			return this.fileHandlerId == id;
+			return this.filehandleId == id;
 		}
 
-		String getFileHandlerID() {
-			return this.fileHandlerId;
+		String getFilehandleID() {
+			return this.filehandleId;
 		}
 
 		String getName() {
@@ -135,7 +135,7 @@ class LibraryManager {
 
 		@Override
 		String toDescriptor(Loader loader) {
-			return "local#" + this.fileHandlerId + "#" + this.name;
+			return "local#" + this.filehandleId + "#" + this.name;
 		}
 		
 		@Override
@@ -151,12 +151,12 @@ class LibraryManager {
 		public boolean equals(Object other) {
 			if (!(other instanceof LocalDescriptor)) return false;
 			LocalDescriptor o = (LocalDescriptor) other;
-			return this.fileHandlerId.equals(o.fileHandlerId);
+			return this.filehandleId.equals(o.filehandleId);
 		}
 		
 		@Override
 		public int hashCode() {
-			return fileHandlerId.hashCode();
+			return filehandleId.hashCode();
 		}
 	}
 	
@@ -215,7 +215,7 @@ class LibraryManager {
 			return loadJarLibrary(loader, toRead, className);
 		} else if (type.equals("local")){
 			// we know its a local file
-			// we have the handler id so we can ask native - if native doesn't know it can ask the user to pick a file
+			// we have the handle id so we can ask native - if native doesn't know it can ask the user to pick a file
 			Library lib = findLocalLibrary(name, loader);
 			if (lib == null) {
 				loader.showError(Strings.get("fileLoadCanceledError"));
@@ -248,8 +248,8 @@ class LibraryManager {
 		return ret;
 	}
 
-	public LoadedLibrary loadLogisimLibrary(Loader loader, InputStream input, String filename, String fileHandlerID) {
-		LocalDescriptor localDescriptor = new LocalDescriptor(fileHandlerID, input, false, filename);
+	public LoadedLibrary loadLogisimLibrary(Loader loader, InputStream input, String filename, String filehandleID) {
+		LocalDescriptor localDescriptor = new LocalDescriptor(filehandleID, input, false, filename);
 		LoadedLibrary ret = findKnown(localDescriptor);
 		if (ret != null) return ret;
 		try {
@@ -280,8 +280,8 @@ class LibraryManager {
 		return ret;
 	}
 
-	public LoadedLibrary loadJarLibrary(Loader loader, InputStream toRead, String className, String fileHandlerID) {
-		LocalDescriptor localDescriptor = new LocalDescriptor(fileHandlerID, toRead, true, className);
+	public LoadedLibrary loadJarLibrary(Loader loader, InputStream toRead, String className, String filehandleID) {
+		LocalDescriptor localDescriptor = new LocalDescriptor(filehandleID, toRead, true, className);
 		LoadedLibrary ret = findKnown(localDescriptor);
 		if (ret != null) return ret;
 
@@ -341,7 +341,7 @@ class LibraryManager {
 			LibraryDescriptor desc = invMap.get(lib);
 			if (desc instanceof LocalDescriptor) {
 				LocalDescriptor localDesc = (LocalDescriptor) desc;
-				matches.add(localDesc.getFileHandlerID());
+				matches.add(localDesc.getFilehandleID());
 			}
 			if (lib instanceof LoadedLibrary) {
 				LoadedLibrary loadedLib = (LoadedLibrary) lib;

@@ -26,13 +26,13 @@ export async function Java_com_cburch_logisim_gui_main_ExportImage_DownloadFile(
 // Save
 export async function Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData(lib, data, name, logisimFile, saveAs) {
     console.log("Recieved file to save");
-    const fileHandlerId = await logisimFile.getFileHandleId()
+    const filehandleId = await logisimFile.getFileHandleId()
 
     // Check if we are 'saving' or 'saving as'
     if (saveAs) { // Save as
         // Write the file to system memory
         try {
-            const handler = await window.showSaveFilePicker({
+            const handle = await window.showSaveFilePicker({
                 suggestedName: name,
                 types: [{
                     descrption: "Logisim Circuit Files",
@@ -40,58 +40,58 @@ export async function Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData(lib
                 }]
             });
 
-            const hasCirc = await hasCircularReferences(lib, logisimFile, handler)
+            const hasCirc = await hasCircularReferences(lib, logisimFile, handle)
             if (hasCirc) {
                 return;
             }
 
-            const writableStream = await handler.createWritable();
+            const writableStream = await handle.createWritable();
             await writableStream.write(data);
             await writableStream.close();
 
-            // Save the file handler for later use so we can write to it again
+            // Save the file handle for later use so we can write to it again
             //using indexedDB so we can save without requesting permissions
-            if (fileHandlerId == ""){
+            if (filehandleId == ""){
                 const id = crypto.randomUUID();
                 await logisimFile.setFileHandleId(id);
-                saveFileHandler(handler, id);
+                saveFilehandle(handle, id);
             }
             else {
-                saveFileHandler(handler, fileHandlerId);
+                saveFilehandle(handle, filehandleId);
             }
 
             await logisimFile.setSavedLocally(true);
 
             console.log("File saved successfully!");
-            await logisimFile.setName(handler.name.replace(/\.circ$/, ''));
+            await logisimFile.setName(handle.name.replace(/\.circ$/, ''));
         } catch (error) {
             console.error("Failed to save file: ", error)
         }
     } else { // Save
-        const db = await window.idb.openDB("fileHandlersDB", 2,);
-        const handler = await db.get("handlers", fileHandlerId)
+        const db = await window.idb.openDB("fileHandlesDB", 1,);
+        const handle = await db.get("files", filehandleId)
 
         // don't have the file id so need to save as
         // this happens as we don't have permissions from the FileSystemAPI to SAVE a file we OPEN
-        if (!handler) {
+        if (!handle) {
             await Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData(lib, data, name, logisimFile, true);
             return;
         }
 
-        const hasCirc = await hasCircularReferences(lib, logisimFile, handler)
+        const hasCirc = await hasCircularReferences(lib, logisimFile, handle)
         if (hasCirc) {
             return;
         }
 
-        const permissions = await handler.queryPermission({ mode: "readwrite" });
+        const permissions = await handle.queryPermission({ mode: "readwrite" });
 
         if (permissions === "granted" || permissions === "prompt") {
-            const writableStream = await handler.createWritable();
+            const writableStream = await handle.createWritable();
             await writableStream.write(data);
             await writableStream.close();
 
             console.log("File saved successfully!");
-            await logisimFile.setName(handler.name.replace(/\.circ$/, ''));
+            await logisimFile.setName(handle.name.replace(/\.circ$/, ''));
         }
         else {
             console.error("Save failed: Permission denied.")
@@ -99,30 +99,30 @@ export async function Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData(lib
     }
 }
 
-// internal function for saving the fileHandler to indexedDB
-async function saveFileHandler(fileHandler, id) {
-    const db = await window.idb.openDB("fileHandlersDB", 2, {
+// internal function for saving the filehandle to indexedDB
+async function saveFilehandle(filehandle, id) {
+    const db = await window.idb.openDB("fileHandlesDB", 1, {
         upgrade(db) {
-            if (!db.objectStoreNames.contains("handlers")) {
-                db.createObjectStore("handlers")
+            if (!db.objectStoreNames.contains("files")) {
+                db.createObjectStore("files")
             }
         },
     });
 
-    await db.put("handlers", fileHandler, id);
+    await db.put("files", filehandle, id);
 }
 
-// internal function for saving the fileHandler to indexedDB for libraries
-async function saveLibraryHandler(fileHandler, id) {
-    const db = await window.idb.openDB("fileHandlersDB", 2, {
+// internal function for saving the filehandle to indexedDB for libraries
+async function saveLibraryhandle(filehandle, id) {
+    const db = await window.idb.openDB("fileHandlesDB", 1, {
         upgrade(db) {
-            if (!db.objectStoreNames.contains("library")) {
-                db.createObjectStore("library")
+            if (!db.objectStoreNames.contains("libraries")) {
+                db.createObjectStore("libraries")
             }
         },
     });
 
-    await db.put("library", fileHandler, id);
+    await db.put("libraries", filehandle, id);
 }
 
 // save function
@@ -134,7 +134,7 @@ export async function Java_com_cburch_logisim_proj_ProjectActions_SendFileData(l
 //open logisim file
 export async function Java_com_cburch_logisim_gui_menu_MenuFile_openFolder(lib, parent, proj) {
     try {
-        const [handler] = await window.showOpenFilePicker({
+        const [handle] = await window.showOpenFilePicker({
             suggestedName: "",
             types: [{
                 descrption: "Logisim Circuit Files",
@@ -142,13 +142,13 @@ export async function Java_com_cburch_logisim_gui_menu_MenuFile_openFolder(lib, 
             }]
         });
 
-        if (!handler) {
+        if (!handle) {
             console.log("No file selected.");
             return;
         }
 
         console.log("Openning file");
-        const file = await handler.getFile();
+        const file = await handle.getFile();
         const filename = await file.name;
         const arrayBuffer = await file.arrayBuffer();
         const uint8Array = new Uint8Array(arrayBuffer);
@@ -180,7 +180,7 @@ export async function Java_com_cburch_logisim_gui_menu_MenuFile_openFolder(lib, 
 // load logisim lib
 export async function Java_com_cburch_logisim_gui_menu_MenuProject_openFolder(lib, proj) {
     try {
-        const [handler] = await window.showOpenFilePicker({
+        const [handle] = await window.showOpenFilePicker({
             suggestedName: "",
             types: [{
                 descrption: "Logisim Circuit Files",
@@ -188,21 +188,21 @@ export async function Java_com_cburch_logisim_gui_menu_MenuProject_openFolder(li
             }]
         });
 
-        if (!handler) {
+        if (!handle) {
             console.log("No file selected.");
             return;
         }
 
         console.log("Openning file");
-        const file = await handler.getFile();
+        const file = await handle.getFile();
         const filename = await file.name;
         const arrayBuffer = await file.arrayBuffer();
         const uint8Array = new Uint8Array(arrayBuffer);
 
-        let savedID = await extractFileHandlerIDFromFile(file);
+        let savedID = await extractFilehandleIDFromFile(file);
         if (!savedID)
             savedID = crypto.randomUUID();
-        saveLibraryHandler(handler, savedID);
+        saveLibraryhandle(handle, savedID);
 
         // convert to Java type
         console.log("Preparing file for sending to Java");
@@ -232,7 +232,7 @@ export async function Java_com_cburch_logisim_gui_menu_MenuProject_openFolder(li
 
 export async function Java_com_cburch_logisim_gui_menu_ProjectLibraryActions_openJarLibrary(lib, proj) {
     try {
-        const [handler] = await window.showOpenFilePicker({
+        const [handle] = await window.showOpenFilePicker({
             suggestedName: "",
             types: [{
                 descrption: "Java Jar files",
@@ -240,21 +240,21 @@ export async function Java_com_cburch_logisim_gui_menu_ProjectLibraryActions_ope
             }]
         });
 
-        if (!handler) {
+        if (!handle) {
             console.log("No file selected.");
             return;
         }
 
         console.log("Openning file");
-        const file = await handler.getFile();
+        const file = await handle.getFile();
         const arrayBuffer = await file.arrayBuffer();
         const uint8Array = new Uint8Array(arrayBuffer);
 
-        //file handler id
-        let savedID = await extractFileHandlerIDFromFile(file);
+        //file handle id
+        let savedID = await extractFilehandleIDFromFile(file);
         if (!savedID)
             savedID = crypto.randomUUID();
-        saveLibraryHandler(handler, savedID);
+        saveLibraryhandle(handle, savedID);
 
         // convert to Java type
         console.log("Preparing file for sending to Java");
@@ -279,7 +279,7 @@ export async function Java_com_cburch_logisim_gui_menu_ProjectLibraryActions_ope
     }
 }
 
-async function extractFileHandlerIDFromFile(file) {
+async function extractFilehandleIDFromFile(file) {
     const xmlText = await file.text();
   
     const parser = new DOMParser();
@@ -298,14 +298,14 @@ export async function Java_com_cburch_logisim_file_LibraryManager_findLocalLibra
     const [uuid, name] = id.split('#');
     
     //check the db
-    const db = await window.idb.openDB("fileHandlersDB", 2,);
-    const handler = await db.get("library", uuid)
+    const db = await window.idb.openDB("fileHandlesDB", 1,);
+    const handle = await db.get("libraries", uuid)
 
     let file;
 
     try {
-    if (handler) { // we know what file this is
-        file = await handler.getFile()
+    if (handle) { // we know what file this is
+        file = await handle.getFile()
     }
     else { // we don't
         //show warning so its not really confusing and people know what to do
@@ -318,7 +318,7 @@ export async function Java_com_cburch_logisim_file_LibraryManager_findLocalLibra
             name));
 
         //ask user for file
-        const [handler] = await window.showOpenFilePicker({
+        const [handle] = await window.showOpenFilePicker({
             suggestedName: "",
             types: [{
                 descrption: "Logisim Circuit Files",
@@ -329,25 +329,25 @@ export async function Java_com_cburch_logisim_file_LibraryManager_findLocalLibra
             }]
         });
 
-        if (!handler) {
+        if (!handle) {
             console.log("No file selected.");
             return null;
         }
 
         console.log("Openning file");
-        file = await handler.getFile();
+        file = await handle.getFile();
     }
 
     // prep file
     const arrayBuffer = await file.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
 
-    //file handler id
-    let savedID = await extractFileHandlerIDFromFile(file);
+    //file handle id
+    let savedID = await extractFilehandleIDFromFile(file);
     if (!savedID)
         savedID = crypto.randomUUID();
 
-    saveLibraryHandler(handler, savedID);
+    saveLibraryhandle(handle, savedID);
 
     // convert to Java type
     console.log("Preparing file for sending to Java");
@@ -394,22 +394,22 @@ export async function Java_com_cburch_logisim_file_LibraryManager_findLocalLibra
 
 }
 
-async function hasCircularReferences(lib, file, handler) {
+async function hasCircularReferences(lib, file, handle) {
     const LibraryManager = await lib.com.cburch.logisim.file.LibraryManager;
     const javaIds = await LibraryManager.instance.findAllLocalReferences(file);
 
-    // for each id - get the handler and check if it referes to the same file as the one we want to save to
+    // for each id - get the handle and check if it referes to the same file as the one we want to save to
     for (let i = 0; i < await javaIds.length; i++) {
         const id = await javaIds[i];
-        const db = await window.idb.openDB("fileHandlersDB", 2,);
-        const savedHandler = await db.get("library", id);
-        if (savedHandler) {
-            if (await savedHandler.isSameEntry(handler)) {
-                console.log("Handlers: ", savedHandler, handler)
+        const db = await window.idb.openDB("fileHandlesDB", 1,);
+        const savedhandle = await db.get("libraries", id);
+        if (savedhandle) {
+            if (await savedhandle.isSameEntry(handle)) {
+                console.log("handles: ", savedhandle, handle)
                 const JOptionPane = await lib.javax.swing.JOptionPane;
                 const StringUtil = await lib.com.cburch.logisim.util.StringUtil;
                 const Strings = await lib.com.cburch.logisim.file.Strings;
-                const file = await savedHandler.getFile()
+                const file = await savedhandle.getFile()
                 await JOptionPane.showMessageDialog(null,
 					await StringUtil.format(await Strings.get("fileCircularError"), file.name),
 					await Strings.get("fileSaveErrorTitle"),
