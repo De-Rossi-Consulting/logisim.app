@@ -78,7 +78,7 @@ class XmlReader {
 				sourceVersion = LogisimVersion.parse(versionString);
 			}
 
-			// set the filehandler from the file
+			// set the filehandle from the file
 			String FileHandleId = elt.getAttribute("FileHandleId");
 			if (FileHandleId != "") {
 				file.setFileHandleId(FileHandleId);

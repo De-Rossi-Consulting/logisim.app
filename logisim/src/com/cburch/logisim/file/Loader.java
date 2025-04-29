@@ -175,8 +175,8 @@ public class Loader implements LibraryLoader {
 		return ret;
 	}
 
-	public Library loadLocalLogisimLibrary(InputStream data, String filename, String fileHandlerID) {
-		LoadedLibrary ret = LibraryManager.instance.loadLogisimLibrary(this, data, filename, fileHandlerID);
+	public Library loadLocalLogisimLibrary(InputStream data, String filename, String filehandleID) {
+		LoadedLibrary ret = LibraryManager.instance.loadLogisimLibrary(this, data, filename, filehandleID);
 		if (ret != null) {
 			LogisimFile retBase = (LogisimFile) ret.getBase();
 			showMessages(retBase);
@@ -184,9 +184,9 @@ public class Loader implements LibraryLoader {
 		return ret;
 	}
 	
-	public Library loadJarLibrary(InputStream file, String className, String fileHandlerID) {
+	public Library loadJarLibrary(InputStream file, String className, String filehandleID) {
 		//File actual = getSubstitution(file);
-		return LibraryManager.instance.loadJarLibrary(this, file, className, fileHandlerID);
+		return LibraryManager.instance.loadJarLibrary(this, file, className, filehandleID);
 	}
 	
 	public void reload(LoadedLibrary lib) {
