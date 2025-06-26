@@ -1,0 +1,3 @@
+[submodule "logisim-versions/logisim-evolution"]
+	path = logisim-versions/logisim-evolution
+	url = git@github.com:De-Rossi-Consulting/logisim-evolution-wasm.git
