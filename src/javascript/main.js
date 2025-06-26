@@ -7,6 +7,7 @@ import {Java_com_cburch_logisim_gui_main_ExportImage_DownloadFile,
         Java_com_cburch_logisim_file_LibraryManager_findLocalLibrary} from "./fileFunctions.js";
 
 import {Java_com_cburch_logisim_gui_start_Startup_setJava, loadExample} from "./exampleFunctions.js";
+import {VERSIONS, SELECTED_VERSION} from "./logisimVersions.js"
 import "./closeAlert.js";
 
 window.idb = idb;
@@ -33,7 +34,7 @@ window.loadExample = loadExample;
     );
     while (true)
         // restarts the app if its fully closed
-        await cheerpjRunJar("/app/logisim.jar");
+        await cheerpjRunJar(VERSIONS[SELECTED_VERSION].jarPath);
 })();
 
 // need to migrate to a new DB
