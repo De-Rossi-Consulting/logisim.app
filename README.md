@@ -41,6 +41,9 @@ Once a file has been opened, the application functions equivalently in both case
 > [!NOTE]
 > All files stored in the virtual filesystem in the browser are cleared if you delete site data for logisim.app.
 
+> [!NOTE]
+> Due to browser limitations when using Firefox, Logisim.app cannot directly save to specific files, or store references to local files. So saving is replaced with downloading, and you will need to manually find local libraries when openning projects containing them.
+
 ## Building and Running Logisim.app
 
 This project contains:
