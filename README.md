@@ -38,7 +38,7 @@ Whenever you try to open or save a file, you will see the following prompt:
 
 Once a file has been opened, the application functions equivalently in both cases.
 
-> [!NOTE]
+> [!CAUTION]
 > All files stored in the virtual filesystem in the browser are cleared if you delete site data for logisim.app.
 
 > [!NOTE]
