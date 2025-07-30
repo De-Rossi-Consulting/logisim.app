@@ -14,6 +14,7 @@
     "vite": "^6.2.5"
   },
   "dependencies": {
-    "@fontsource-variable/inter": "^5.2.5"
+    "@fontsource-variable/inter": "^5.2.5",
+    "show-open-file-picker": "^0.4.0"
   }
 }

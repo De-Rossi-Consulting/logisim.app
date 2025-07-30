@@ -1,3 +1,4 @@
+import { showOpenFilePicker, showSaveFilePicker } from 'show-open-file-picker'
 // Functions used by wasm to interact with local filesS
 
 // Export Image
@@ -32,7 +33,7 @@ export async function Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData(lib
     if (saveAs) { // Save as
         // Write the file to system memory
         try {
-            const handle = await window.showSaveFilePicker({
+            const handle = await showSaveFilePicker({
                 suggestedName: name,
                 types: [{
                     description: "Logisim Circuit Files",
@@ -83,19 +84,29 @@ export async function Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData(lib
             return;
         }
 
-        const permissions = await handle.queryPermission({ mode: "readwrite" });
+        try {
+            const permissions = await handle.queryPermission({ mode: "readwrite" });
+            if (permissions === "granted" || permissions === "prompt") {
+                const writableStream = await handle.createWritable();
+                await writableStream.write(data);
+                await writableStream.close();
 
-        if (permissions === "granted" || permissions === "prompt") {
-            const writableStream = await handle.createWritable();
-            await writableStream.write(data);
-            await writableStream.close();
-
-            console.log("File saved successfully!");
-            await logisimFile.setName(handle.name.replace(/\.circ$/, ''));
+                console.log("File saved successfully!");
+                await logisimFile.setName(handle.name.replace(/\.circ$/, ''));
+            }
+            else {
+                console.error("Save failed: Permission denied.")
+            }
+        } catch (e) {
+            console.log(e);
+            const JOptionPane = await lib.javax.swing.JOptionPane;
+            const Strings = await lib.com.cburch.logisim.file.Strings;
+            await JOptionPane.showMessageDialog(null,
+                "An error occured during saving - if you are on Firefox please save as",
+                await Strings.get("fileSaveErrorTitle"),
+                await JOptionPane.ERROR_MESSAGE);
         }
-        else {
-            console.error("Save failed: Permission denied.")
-        }
+        
     }
 }
 
@@ -134,7 +145,7 @@ export async function Java_com_cburch_logisim_proj_ProjectActions_SendFileData(l
 //open logisim file
 export async function Java_com_cburch_logisim_gui_menu_MenuFile_openFolder(lib, parent, proj) {
     try {
-        const [handle] = await window.showOpenFilePicker({
+        const [handle] = await showOpenFilePicker({
             suggestedName: "",
             types: [{
                 description: "Logisim Circuit Files",
@@ -180,7 +191,7 @@ export async function Java_com_cburch_logisim_gui_menu_MenuFile_openFolder(lib, 
 // load logisim lib
 export async function Java_com_cburch_logisim_gui_menu_MenuProject_openFolder(lib, proj) {
     try {
-        const [handle] = await window.showOpenFilePicker({
+        const [handle] = await showOpenFilePicker({
             suggestedName: "",
             types: [{
                 description: "Logisim Circuit Files",
@@ -232,7 +243,7 @@ export async function Java_com_cburch_logisim_gui_menu_MenuProject_openFolder(li
 
 export async function Java_com_cburch_logisim_gui_menu_ProjectLibraryActions_openJarLibrary(lib, proj) {
     try {
-        const [handle] = await window.showOpenFilePicker({
+        const [handle] = await showOpenFilePicker({
             suggestedName: "",
             types: [{
                 description: "Java Jar files",
@@ -304,88 +315,94 @@ export async function Java_com_cburch_logisim_file_LibraryManager_findLocalLibra
     let file;
 
     try {
-    if (handle) { // we know what file this is
-        file = await handle.getFile()
-    }
-    else { // we don't
-        //show warning so its not really confusing and people know what to do
-        const JOptionPane = await lib.javax.swing.JOptionPane;
-        const StringUtil = await lib.com.cburch.logisim.util.StringUtil;
-        const Strings = await lib.com.cburch.logisim.file.Strings;
+        let found = false;
+        try {
+            if (handle) { // we know what file this is
+                file = await handle.getFile()
+                found = true;
+            }
+        } catch {
+            found = false;
+        }
+        if (!found) { // we don't
+            //show warning so its not really confusing and people know what to do
+            const JOptionPane = await lib.javax.swing.JOptionPane;
+            const StringUtil = await lib.com.cburch.logisim.util.StringUtil;
+            const Strings = await lib.com.cburch.logisim.file.Strings;
 
-        await JOptionPane.showMessageDialog(null,
-            await StringUtil.format(await Strings.get("fileLibraryMissingError"),
-            name));
+            await JOptionPane.showMessageDialog(null,
+                await StringUtil.format(await Strings.get("fileLibraryMissingError"),
+                name));
 
-        //ask user for file
-        const [handle] = await window.showOpenFilePicker({
-            suggestedName: "",
-            types: [{
-                description: "Logisim Circuit Files",
-                accept: {"application/octet-stream" : [".circ"]}
-            },{
-                description: "Java Jar files",
-                accept: {"application/octet-stream" : [".jar"]}
-            }]
-        });
+            //ask user for file
+            const [handle] = await showOpenFilePicker({
+                suggestedName: "",
+                types: [{
+                    description: "Logisim Circuit Files",
+                    accept: {"application/octet-stream" : [".circ"]}
+                },{
+                    description: "Java Jar files",
+                    accept: {"application/octet-stream" : [".jar"]}
+                }]
+            });
 
-        if (!handle) {
-            console.log("No file selected.");
-            return null;
+            if (!handle) {
+                console.log("No file selected.");
+                return null;
+            }
+
+            console.log("Openning file");
+            file = await handle.getFile();
         }
 
-        console.log("Openning file");
-        file = await handle.getFile();
-    }
+        // prep file
+        const arrayBuffer = await file.arrayBuffer();
+        const uint8Array = new Uint8Array(arrayBuffer);
 
-    // prep file
-    const arrayBuffer = await file.arrayBuffer();
-    const uint8Array = new Uint8Array(arrayBuffer);
+        //file handle id
+        let savedID = await extractFilehandleIDFromFile(file);
+        if (!savedID)
+            savedID = crypto.randomUUID();
 
-    //file handle id
-    let savedID = await extractFilehandleIDFromFile(file);
-    if (!savedID)
-        savedID = crypto.randomUUID();
+        saveLibraryhandle(handle, savedID);
 
-    saveLibraryhandle(handle, savedID);
+        // convert to Java type
+        console.log("Preparing file for sending to Java");
+        //const lib = await cheerpjRunLibrary("/app/logisim.jar");
+        const Byte = await lib.java.lang.Byte;
+        const ArrayList = await lib.java.util.ArrayList;
 
-    // convert to Java type
-    console.log("Preparing file for sending to Java");
-    //const lib = await cheerpjRunLibrary("/app/logisim.jar");
-    const Byte = await lib.java.lang.Byte;
-    const ArrayList = await lib.java.util.ArrayList;
+        console.log("Building byte array");
+        const array = await new ArrayList();
+        for (let i = 0; i < uint8Array.length; i++) {
+            const b = await new Byte(uint8Array[i]);
+            await array.add(b);
+        }
+        console.log("Converting array");
+        const javaByteArray = await array.toArray();
+        const ByteArrayConverter = await lib.com.wasm.helpers.ByteArrayConverter;
+        const data = await ByteArrayConverter.convertObjectToByteArray(javaByteArray);
+        console.log("Data prepared... calling logisim method");
 
-    console.log("Building byte array");
-    const array = await new ArrayList();
-    for (let i = 0; i < uint8Array.length; i++) {
-        const b = await new Byte(uint8Array[i]);
-        await array.add(b);
-    }
-    console.log("Converting array");
-    const javaByteArray = await array.toArray();
-    const ByteArrayConverter = await lib.com.wasm.helpers.ByteArrayConverter;
-    const data = await ByteArrayConverter.convertObjectToByteArray(javaByteArray);
-    console.log("Data prepared... calling logisim method");
-
-    // get type from name
-    if (file.name.endsWith(".jar")) {
-        const LibraryManager = await lib.com.cburch.logisim.file.LibraryManager;
-        const library = await LibraryManager.instance.loadJarLibrary(loader, data, name, uuid);
-        return library;
-    } else if (file.name.endsWith(".circ")) {
-        const LibraryManager = await lib.com.cburch.logisim.file.LibraryManager;
-        const library = await LibraryManager.instance.loadLogisimLibrary(loader, data, name, uuid);
-        return library;
-    } else {
-        const parts = file.name.split('.');
-        const type = parts.pop();
-        const JOptionPane = await lib.javax.swing.JOptionPane;
-        const StringUtil = await lib.com.cburch.logisim.util.StringUtil;
-        const Strings = await lib.com.cburch.logisim.file.Strings;
-        await JOptionPane.showMessageDialog(null, await StringUtil.format( await Strings.get("fileTypeError"),
-            type, file.name));
-        return null;
-    }
+        // get type from name
+        if (file.name.endsWith(".jar")) {
+            const LibraryManager = await lib.com.cburch.logisim.file.LibraryManager;
+            const library = await LibraryManager.instance.loadJarLibrary(loader, data, name, uuid);
+            return library;
+        } else if (file.name.endsWith(".circ")) {
+            const LibraryManager = await lib.com.cburch.logisim.file.LibraryManager;
+            const library = await LibraryManager.instance.loadLogisimLibrary(loader, data, name, uuid);
+            return library;
+        } else {
+            const parts = file.name.split('.');
+            const type = parts.pop();
+            const JOptionPane = await lib.javax.swing.JOptionPane;
+            const StringUtil = await lib.com.cburch.logisim.util.StringUtil;
+            const Strings = await lib.com.cburch.logisim.file.Strings;
+            await JOptionPane.showMessageDialog(null, await StringUtil.format( await Strings.get("fileTypeError"),
+                type, file.name));
+            return null;
+        }
     }
     catch {
         console.error("Error finding library");
@@ -404,17 +421,28 @@ async function hasCircularReferences(lib, file, handle) {
         const db = await window.idb.openDB("fileHandlesDB", 1,);
         const savedhandle = await db.get("libraries", id);
         if (savedhandle) {
-            if (await savedhandle.isSameEntry(handle)) {
-                console.log("handles: ", savedhandle, handle)
+            try {
+                if (await savedhandle.isSameEntry(handle)) {
+                    console.log("handles: ", savedhandle, handle)
+                    const JOptionPane = await lib.javax.swing.JOptionPane;
+                    const StringUtil = await lib.com.cburch.logisim.util.StringUtil;
+                    const Strings = await lib.com.cburch.logisim.file.Strings;
+                    const file = await savedhandle.getFile()
+                    await JOptionPane.showMessageDialog(null,
+                        await StringUtil.format(await Strings.get("fileCircularError"), file.name),
+                        await Strings.get("fileSaveErrorTitle"),
+                        await JOptionPane.ERROR_MESSAGE);
+                    return true;
+                }
+            }
+            catch {
                 const JOptionPane = await lib.javax.swing.JOptionPane;
-                const StringUtil = await lib.com.cburch.logisim.util.StringUtil;
                 const Strings = await lib.com.cburch.logisim.file.Strings;
-                const file = await savedhandle.getFile()
                 await JOptionPane.showMessageDialog(null,
-					await StringUtil.format(await Strings.get("fileCircularError"), file.name),
-					await Strings.get("fileSaveErrorTitle"),
-					await JOptionPane.ERROR_MESSAGE);
-                return true;
+                    "Logisim was unable to check for circular references",
+                    "Warning",
+                    await JOptionPane.WARNING_MESSAGE);
+                return false;
             }
         }
     }
