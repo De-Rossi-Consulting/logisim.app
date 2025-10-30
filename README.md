@@ -47,7 +47,7 @@ Once a file has been opened, the application functions equivalently in both case
 ## Building and Running Logisim.app
 
 This project contains:
-- A copy of the original [Logisim source code](https://sourceforge.net/projects/circuit/), minimally modified to sypport file handling in the browser.
+- A copy of the original [Logisim source code](https://sourceforge.net/projects/circuit/), minimally modified to support file handling in the browser.
 - A lightweight HTML/CSS/JS frontend.
 
 ### Dependencies
