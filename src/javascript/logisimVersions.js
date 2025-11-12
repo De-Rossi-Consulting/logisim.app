@@ -46,4 +46,4 @@ export const VERSIONS = [
         natives: {},
     },
 ];
-export const SELECTED_VERSION = 0;
+export const SELECTED_VERSION = 1;

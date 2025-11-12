@@ -1,5 +1,7 @@
 // Functions used to load examples
 
+import { SELECTED_VERSION } from "./logisimVersions";
+
 export async function Java_com_cburch_logisim_gui_start_Startup_setJava(lib) {
     window.JavaInstance = await lib;
     window.ProjectActions = await lib.com.cburch.logisim.proj.ProjectActions;
@@ -8,6 +10,11 @@ export async function Java_com_cburch_logisim_gui_start_Startup_setJava(lib) {
 }
 
 export async function loadExample(examplePath, exampleName) {
+    if (SELECTED_VERSION != 0) {
+        window.alert("Examples only work on the original Logisim");
+        return;
+    }
+
     if (!window.JavaInstance) {
         window.alert("Please wait for Logisim to launch");
         return;
