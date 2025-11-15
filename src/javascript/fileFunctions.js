@@ -1,4 +1,5 @@
 import { showOpenFilePicker, showSaveFilePicker } from 'show-open-file-picker'
+import { openFile } from './filePickers';
 // Functions used by wasm to interact with local filesS
 
 // Export Image
@@ -145,7 +146,7 @@ export async function Java_com_cburch_logisim_proj_ProjectActions_SendFileData(l
 //open logisim file
 export async function Java_com_cburch_logisim_gui_menu_MenuFile_openFolder(lib, parent, proj) {
     try {
-        const [handle] = await showOpenFilePicker({
+        const [handle] = await openFile({
             suggestedName: "",
             types: [{
                 description: "Logisim Circuit Files",
@@ -159,7 +160,13 @@ export async function Java_com_cburch_logisim_gui_menu_MenuFile_openFolder(lib, 
         }
 
         console.log("Openning file");
-        const file = await handle.getFile();
+        let file;
+        if (handle.isFallback) {
+            file = handle.file;
+        }
+        else {
+            file = await handle.getFile();
+        }
         const filename = await file.name;
         const arrayBuffer = await file.arrayBuffer();
         const uint8Array = new Uint8Array(arrayBuffer);
