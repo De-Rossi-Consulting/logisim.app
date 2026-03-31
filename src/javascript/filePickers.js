@@ -26,3 +26,26 @@ export async function openFile(options) {
         })
     }
 }
+
+export async function saveFile(options, data) {
+    // Native File System Access API (Chromium desktop, some Android)
+    try {
+        const handle = await showSaveFilePicker(options);
+        return { isFallback: false, handle };
+    } catch {
+        // iOS/iPadOS Safari fallback: trigger a download instead of "saving to disk"
+        const filename = options?.suggestedName || 'download';
+        const blob = data instanceof Blob ? data : new Blob([data], { type: 'application/octet-stream' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        // Safari can start the download asynchronously; revoking immediately can break it.
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        return { isFallback: true, filename };
+    }
+}

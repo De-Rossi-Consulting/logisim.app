@@ -1,5 +1,4 @@
-import { showOpenFilePicker, showSaveFilePicker } from 'show-open-file-picker'
-import { openFile } from './filePickers';
+import { openFile, saveFile } from './filePickers';
 // Functions used by wasm to interact with local filesS
 
 // Export Image
@@ -19,10 +18,12 @@ export async function Java_com_cburch_logisim_gui_main_ExportImage_DownloadFile(
 
     link.href = url;
     link.download = filename;
+    link.style.display = 'none';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    // Safari can require a short delay before revoking the object URL.
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 // Save
@@ -34,13 +35,23 @@ export async function Java_com_cburch_logisim_gui_menu_MenuFile_SendFileData(lib
     if (saveAs) { // Save as
         // Write the file to system memory
         try {
-            const handle = await showSaveFilePicker({
+            const result = await saveFile({
                 suggestedName: name,
                 types: [{
                     description: "Logisim Circuit Files",
                     accept: {"application/octet-stream" : [".circ"]}
                 }]
-            });
+            }, data);
+
+            if (result.isFallback) {
+                // On iOS Safari we can't persist a handle; treat as exported/downloaded.
+                await logisimFile.setSavedLocally(false);
+                await logisimFile.setName(String(name).replace(/\.circ$/, ''));
+                console.log("File downloaded (fallback save).");
+                return;
+            }
+
+            const handle = result.handle;
 
             const hasCirc = await hasCircularReferences(lib, logisimFile, handle)
             if (hasCirc) {
@@ -198,7 +209,7 @@ export async function Java_com_cburch_logisim_gui_menu_MenuFile_openFolder(lib, 
 // load logisim lib
 export async function Java_com_cburch_logisim_gui_menu_MenuProject_openFolder(lib, proj) {
     try {
-        const [handle] = await showOpenFilePicker({
+        const [handle] = await openFile({
             suggestedName: "",
             types: [{
                 description: "Logisim Circuit Files",
@@ -212,15 +223,18 @@ export async function Java_com_cburch_logisim_gui_menu_MenuProject_openFolder(li
         }
 
         console.log("Openning file");
-        const file = await handle.getFile();
+        const file = handle?.isFallback ? handle.file : await handle.getFile();
         const filename = await file.name;
         const arrayBuffer = await file.arrayBuffer();
         const uint8Array = new Uint8Array(arrayBuffer);
 
-        let savedID = await extractFilehandleIDFromFile(file);
-        if (!savedID)
-            savedID = crypto.randomUUID();
-        saveLibraryhandle(handle, savedID);
+        // Only persist handles if we actually have a File System Access handle.
+        if (!handle?.isFallback) {
+            let savedID = await extractFilehandleIDFromFile(file);
+            if (!savedID)
+                savedID = crypto.randomUUID();
+            saveLibraryhandle(handle, savedID);
+        }
 
         // convert to Java type
         console.log("Preparing file for sending to Java");
@@ -250,7 +264,7 @@ export async function Java_com_cburch_logisim_gui_menu_MenuProject_openFolder(li
 
 export async function Java_com_cburch_logisim_gui_menu_ProjectLibraryActions_openJarLibrary(lib, proj) {
     try {
-        const [handle] = await showOpenFilePicker({
+        const [handle] = await openFile({
             suggestedName: "",
             types: [{
                 description: "Java Jar files",
@@ -264,15 +278,17 @@ export async function Java_com_cburch_logisim_gui_menu_ProjectLibraryActions_ope
         }
 
         console.log("Openning file");
-        const file = await handle.getFile();
+        const file = handle?.isFallback ? handle.file : await handle.getFile();
         const arrayBuffer = await file.arrayBuffer();
         const uint8Array = new Uint8Array(arrayBuffer);
 
-        //file handle id
-        let savedID = await extractFilehandleIDFromFile(file);
-        if (!savedID)
-            savedID = crypto.randomUUID();
-        saveLibraryhandle(handle, savedID);
+        // Only persist handles if we actually have a File System Access handle.
+        if (!handle?.isFallback) {
+            let savedID = await extractFilehandleIDFromFile(file);
+            if (!savedID)
+                savedID = crypto.randomUUID();
+            saveLibraryhandle(handle, savedID);
+        }
 
         // convert to Java type
         console.log("Preparing file for sending to Java");
@@ -342,7 +358,7 @@ export async function Java_com_cburch_logisim_file_LibraryManager_findLocalLibra
                 name));
 
             //ask user for file
-            const [handle] = await showOpenFilePicker({
+            const [handle] = await openFile({
                 suggestedName: "",
                 types: [{
                     description: "Logisim Circuit Files",
@@ -359,7 +375,7 @@ export async function Java_com_cburch_logisim_file_LibraryManager_findLocalLibra
             }
 
             console.log("Openning file");
-            file = await handle.getFile();
+            file = handle?.isFallback ? handle.file : await handle.getFile();
         }
 
         // prep file
@@ -371,7 +387,9 @@ export async function Java_com_cburch_logisim_file_LibraryManager_findLocalLibra
         if (!savedID)
             savedID = crypto.randomUUID();
 
-        saveLibraryhandle(handle, savedID);
+        if (handle && !handle.isFallback) {
+            saveLibraryhandle(handle, savedID);
+        }
 
         // convert to Java type
         console.log("Preparing file for sending to Java");
